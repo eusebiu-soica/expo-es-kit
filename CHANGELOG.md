@@ -7,6 +7,7 @@
 - `history`: self-contained HTML dashboard of audit scores over time + `badge.svg` / shields.io `badge.json`. New `scripts/history.mjs`.
 - Audit now suggests `history`, `upgrade` and `privacy` when relevant.
 - `.gitattributes` forcing LF line endings.
+- Project website (`docs/`, GitHub Pages): landing page with light/dark mode and a social preview image.
 
 ### Fixed
 - Skill and agent frontmatter values are now quoted. Unquoted `: ` in some descriptions (setup skill, 6 agents) made YAML parsing fail, so their descriptions were silently dropped.
