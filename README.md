@@ -7,7 +7,7 @@
 Scored multi-agent audits · verified fixes · per-folder agent rules · backend & auth security · store privacy forms · SDK upgrades · HeroUI Native
 
 [![Version](https://img.shields.io/badge/version-0.2.0-blue?style=flat-square)](CHANGELOG.md)
-[![Website](https://img.shields.io/badge/website-live-FF7A45?style=flat-square&logo=githubpages&logoColor=white)](https://eusebiu-soica.github.io/expo-es-kit/)
+[![Website](https://img.shields.io/badge/website-live-FF7A45?style=flat-square&logo=githubpages&logoColor=white)](https://expo-es-kit.eusebiusoica.com/)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54%2B-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev)
 [![React Native](https://img.shields.io/badge/React_Native-0.81%2B-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactnative.dev)
@@ -18,7 +18,7 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 [![GitHub stars](https://img.shields.io/github/stars/eusebiu-soica/expo-es-kit?style=flat-square&logo=github)](https://github.com/eusebiu-soica/expo-es-kit/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/eusebiu-soica/expo-es-kit?style=flat-square)](https://github.com/eusebiu-soica/expo-es-kit/commits)
 
-[🌐 Website](https://eusebiu-soica.github.io/expo-es-kit/) · [Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [Privacy](#-privacy) · [Upgrade](#-upgrade) · [History](#-history) · [FAQ](#-faq--troubleshooting)
+[🌐 Website](https://expo-es-kit.eusebiusoica.com/) · [Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [Privacy](#-privacy) · [Upgrade](#-upgrade) · [History](#-history) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
