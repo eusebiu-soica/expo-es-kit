@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 — 2026-10-07
+### Added
+- `privacy`: App Store App Privacy + Google Play Data safety answers from evidence (SDK catalog of 35+ SDKs, permissions, code, DB schema), privacy manifest / required-reason API check, rejection-risk findings. New `scripts/privacy-scan.mjs`.
+- `upgrade`: Expo SDK upgrades one verified major at a time (plan from release notes, patches, library compatibility, OTA safety, gates + device smoke test per step, re-audit). Uses the official Expo upgrade skill when installed.
+- `history`: self-contained HTML dashboard of audit scores over time + `badge.svg` / shields.io `badge.json`. New `scripts/history.mjs`.
+- Audit now suggests `history`, `upgrade` and `privacy` when relevant.
+- `.gitattributes` forcing LF line endings.
+
+### Fixed
+- Skill and agent frontmatter values are now quoted. Unquoted `: ` in some descriptions (setup skill, 6 agents) made YAML parsing fail, so their descriptions were silently dropped.
+- `validate-plugin.mjs` now catches CRLF line endings and unsafe unquoted YAML values.
+
 ## 0.1.0 — 2026-10-07
 First release.
 - `audit`: scored 0–10 audit across 13 categories (+ HeroUI Native when installed), quick and deep (8 specialist agents + adversarial verifier) modes, GO / NO-GO verdict, trend vs previous report, Markdown + JSON reports in `docs/audits/`.

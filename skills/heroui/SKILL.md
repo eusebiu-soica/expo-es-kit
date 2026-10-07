@@ -1,6 +1,6 @@
 ---
 name: heroui
-description: Audit and set up HeroUI Native (heroui-native) in an Expo app — performance (granular imports, single sheet host, skeleton cost, overdraw from translucent colors, memoized rows), design tokens (colors, typography, spacing, radius adoption vs hardcoded values, dark/light parity, tailwind-variants), animations (Reanimated v4, reduced motion, transitions, bottom-sheet snap/scroll) and accessibility. Outputs a 0–10 scored table with suggestions. Use when the user mentions HeroUI / heroui-native, UI library audit, design tokens, or UI performance in an app that uses HeroUI Native.
+description: "Audit and set up HeroUI Native (heroui-native) in an Expo app — performance (granular imports, single sheet host, skeleton cost, overdraw from translucent colors, memoized rows), design tokens (colors, typography, spacing, radius adoption vs hardcoded values, dark/light parity, tailwind-variants), animations (Reanimated v4, reduced motion, transitions, bottom-sheet snap/scroll) and accessibility. Outputs a 0–10 scored table with suggestions. Use when the user mentions HeroUI / heroui-native, UI library audit, design tokens, or UI performance in an app that uses HeroUI Native."
 argument-hint: "[audit|setup] [appPath] [--out=<report.md>]"
 ---
 

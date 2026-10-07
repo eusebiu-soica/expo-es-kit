@@ -23,7 +23,25 @@ function frontmatter(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---/);
   return m ? m[1] : null;
 }
+// YAML pitfalls that make Claude Code drop the whole frontmatter: CRLF, and unquoted plain scalars containing ": " or " #".
+function yamlProblems(file, text) {
+  const out = [];
+  if (text.includes("\r")) out.push(`${file}: CRLF line endings (frontmatter will not parse) — normalize to LF`);
+  const fm = frontmatter(text.replace(/\r/g, ""));
+  if (!fm) return out;
+  for (const line of fm.split("\n")) {
+    const m = line.match(/^([\w-]+):\s+(.*)$/);
+    if (!m) continue;
+    const v = m[2].trim();
+    if (/^["'>|\[{]/.test(v)) continue;
+    if (/:\s/.test(v) || /\s#/.test(v)) out.push(`${file}: frontmatter "${m[1]}" has an unquoted ": " or " #" — wrap the value in double quotes`);
+  }
+  return out;
+}
 const skills = fs.readdirSync(path.join(root, "skills"));
+for (const f of [...fs.readdirSync(path.join(root, "skills")).map((x) => `skills/${x}/SKILL.md`), ...fs.readdirSync(path.join(root, "agents")).map((x) => `agents/${x}`)]) {
+  if (exists(f)) errors.push(...yamlProblems(f, read(f)));
+}
 for (const s of skills) {
   const p = `skills/${s}/SKILL.md`;
   if (!exists(p)) { errors.push(`${p} missing`); continue; }
@@ -55,7 +73,7 @@ for (const f of docFiles) {
 for (const s of skills) {
   for (const m of read(`skills/${s}/SKILL.md`).matchAll(/expo-es-kit:([a-z-]+)/g)) {
     const n = m[1];
-    if (["audit", "fix", "setup", "backend", "foundation", "heroui", "start", "end"].includes(n)) continue;
+    if (["audit", "fix", "setup", "backend", "foundation", "heroui", "privacy", "history", "upgrade", "start", "end"].includes(n)) continue;
     if (!agents.includes(`${n}.md`)) errors.push(`skills/${s}: unknown agent expo-es-kit:${n}`);
   }
 }

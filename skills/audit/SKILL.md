@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Production-readiness audit of an Expo / React Native app — performance, startup speed, bundle size, caching, MMKV, secure storage, client security, auth & sessions, backend security (Supabase RLS or API on Vercel/Edge/Expo API routes), dependencies, SDK/OTA updates, release readiness, agent instructions and HeroUI Native. Outputs a 0–10 scored table with suggestions per category, a GO/NO-GO verdict and trend vs the previous audit. Use when the user asks to audit, review, check or score an Expo/React Native app, asks "is my app production ready", or wants a deep/multi-agent audit.
+description: "Production-readiness audit of an Expo / React Native app — performance, startup speed, bundle size, caching, MMKV, secure storage, client security, auth & sessions, backend security (Supabase RLS or API on Vercel/Edge/Expo API routes), dependencies, SDK/OTA updates, release readiness, agent instructions and HeroUI Native. Outputs a 0–10 scored table with suggestions per category, a GO/NO-GO verdict and trend vs the previous audit. Use when the user asks to audit, review, check or score an Expo/React Native app, asks \"is my app production ready\", or wants a deep/multi-agent audit."
 argument-hint: "[appPath] [--quick|--deep] [--api=<apiRepoPath>] [--only=perf,mmkv,...] [--out=<report.md>]"
 ---
 
@@ -146,7 +146,7 @@ If the plugin agent types are not available, use `general-purpose`. Paste the ag
    - "What was not checked"
    - the path of the saved report
    - a one-line next step, e.g. `Run /expo-es-kit:fix --only=P0 to fix the blockers (it re-verifies everything at the end).`
-3. If the `agent-config` score is 7 or lower, also suggest `/expo-es-kit:setup`. If a HeroUI row exists and scores 7 or lower, suggest `/expo-es-kit:heroui setup`.
+3. If at least 2 audit JSONs exist now, suggest `/expo-es-kit:history` to refresh the trend dashboard and badge. If `updates` scores 6 or lower, suggest `/expo-es-kit:upgrade --plan-only`. If release findings involve privacy, permissions or account deletion, suggest `/expo-es-kit:privacy`. If the `agent-config` score is 7 or lower, also suggest `/expo-es-kit:setup`. If a HeroUI row exists and scores 7 or lower, suggest `/expo-es-kit:heroui setup`.
 
 ## Rules
 

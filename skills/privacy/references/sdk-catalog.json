@@ -1,0 +1,3675 @@
+{
+  "version": 1,
+  "verifiedAt": "2026-10-07",
+  "sources": [
+    "https://developer.apple.com/app-store/app-privacy-details/",
+    "https://developer.apple.com/app-store/user-privacy-and-data-use/",
+    "https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api",
+    "https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests",
+    "https://developer.apple.com/support/third-party-SDK-requirements/",
+    "https://support.google.com/googleplay/android-developer/answer/10787469",
+    "https://support.google.com/googleplay/android-developer/answer/13327111",
+    "https://docs.expo.dev/guides/apple-privacy/",
+    "https://expo.dev/privacy-explained",
+    "https://docs.sentry.io/platforms/react-native/data-management/data-collected/",
+    "https://docs.bugsnag.com/platforms/ios/appstore-privacy/",
+    "https://docs.datadoghq.com/real_user_monitoring/application_monitoring/ios/data_collected/",
+    "https://docs.logrocket.com/reference/apple-privacy-questionnaire",
+    "https://firebase.google.com/docs/ios/app-store-data-collection",
+    "https://firebase.google.com/docs/android/play-data-disclosure",
+    "https://expo.dev/privacy-explained",
+    "https://docs.expo.dev/versions/latest/sdk/application/",
+    "https://docs.expo.dev/versions/latest/sdk/tracking-transparency/",
+    "https://docs.expo.dev/regulatory-compliance/data-and-privacy-protection/",
+    "https://docs.expo.dev/eas/observe/reference/client-id/",
+    "https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy",
+    "https://support.stripe.com/questions/stripe-mobile-sdk-privacy-details",
+    "https://supabase.com/legal/customer-resources/data-processing-addendum",
+    "https://clerk.com/legal/dpa",
+    "https://github.com/auth0/Auth0.swift/blob/master/Auth0/PrivacyInfo.xcprivacy",
+    "https://posthog.com/docs/privacy/data-collection",
+    "https://amplitude.com/docs/sdks/analytics/react-native/react-native-sdk",
+    "https://mixpanel.com/legal/app-store-privacy-details/",
+    "https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/mobile/apple/ios-17",
+    "https://docs.vexo.co/react-native-guide/store-compliance",
+    "https://documentation.onesignal.com/docs/apple-app-privacy-requirements",
+    "https://docs.customer.io/accounts/security/mobile-privacy/",
+    "https://www.braze.com/docs/developer_guide/analytics/managing_data_collection",
+    "https://help.branch.io/v1/docs/answering-the-app-store-connect-privacy-questions",
+    "https://support.appsflyer.com/hc/en-us/articles/21677433322641",
+    "https://help.adjust.com/en/article/submit-privacy-details-to-apple",
+    "https://developers.google.com/admob/ios/privacy/data-disclosure",
+    "https://developers.facebook.com/blog/post/2022/07/18/resources-for-completing-app-store-data-practice-questionnaires-apps-facebook-or-audience-network-sdk/",
+    "https://www.intercom.com/help/en/articles/4686934-apple-s-app-store-data-privacy-details-and-intercom-s-ios-sdk",
+    "https://support.zendesk.com/hc/en-us/articles/7334754169370-Zendesk-SDKs-and-app-privacy-details"
+  ],
+  "conventions": {
+    "linked": "Vendor default. Rows with condition if-user-identified make every row of that SDK linked when the app identifies the user.",
+    "shared": "Google Data safety 'shared': true only when the recipient is not acting as the developer's service provider (ads, attribution, data brokers).",
+    "purposes": "Apple purpose ids; googlePurposes present only when the Google answer differs from the direct mapping in data-types.md.",
+    "condition": "always = collected whenever the SDK is initialized; if-enabled = depends on config/feature; if-user-identified = only after identify/setUser/logIn.",
+    "shipsPrivacyManifest": "yes only when the vendor's iOS SDK manifest was seen; no for JS-only packages or verified absence; unknown otherwise."
+  },
+  "sdks": [
+    {
+      "packages": [
+        "@sentry/react-native",
+        "sentry-expo"
+      ],
+      "name": "Sentry",
+      "kind": "crash-reporting",
+      "data": [
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Always when Sentry.init has a DSN. Sentry's manifest: not linked. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "tracesSampleRate/profilesSampleRate > 0 (performance monitoring, app start, slow/frozen frames)."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Breadcrumbs, console logs, device/OS info, request URLs. Sentry derives the client IP server-side unless disabled."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "Sentry.setUser({ id }) or sendDefaultPii: true. Makes every row above linked."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "Only if setUser({ email }) / sendDefaultPii sends it."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Session Replay (replaysSessionSampleRate/replaysOnErrorSampleRate). Masks text/images by default; unmasked screens can include other_user_content/photos."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "sentry-cocoa ships PrivacyInfo.xcprivacy (CrashData, PerformanceData, OtherDiagnosticData; CA92.1, 35F9.1, C617.1). Sentry docs say RN static builds need the reasons copied into the app manifest.",
+      "docs": "https://docs.sentry.io/platforms/react-native/data-management/data-collected/"
+    },
+    {
+      "packages": [
+        "@bugsnag/react-native",
+        "@bugsnag/expo"
+      ],
+      "name": "Bugsnag",
+      "kind": "crash-reporting",
+      "data": [
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics"
+          ],
+          "note": "Always. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Device/app state with each report; BugSnag Performance adds traces."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Breadcrumbs (navigation, taps, logs)."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Generated per-install device id, also used as default user id."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "setUser(id, email, name) → linked; email/name rows apply if passed."
+        },
+        {
+          "apple": "other_data",
+          "google": "other_app_performance_data",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "App info declared as Other Data Types in Bugsnag's manifest."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://docs.bugsnag.com/platforms/ios/appstore-privacy/"
+    },
+    {
+      "packages": [
+        "@datadog/mobile-react-native",
+        "@datadog/mobile-react-navigation",
+        "@datadog/mobile-react-native-session-replay"
+      ],
+      "name": "Datadog RUM",
+      "kind": "crash-reporting",
+      "data": [
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Crash reporting enabled by default in RUM. Only after trackingConsent is GRANTED."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Views, long tasks, resources timing."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Sessions, views, user actions."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "IP + geo (city/country) collected by default; can be disabled in the RUM application settings."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "DdSdkReactNative.setUser({ id, name, email }) → linked; add name/email rows if passed."
+        },
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Session Replay may capture on-screen content unless masked."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "dd-sdk-ios manifest declares only PerformanceData; Datadog docs list more. Use the docs.",
+      "docs": "https://docs.datadoghq.com/real_user_monitoring/application_monitoring/ios/data_collected/"
+    },
+    {
+      "packages": [
+        "@logrocket/react-native"
+      ],
+      "name": "LogRocket",
+      "kind": "crash-reporting",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Session replay of screens, taps, navigation."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Network timings, console logs."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Derived from IP; can be disabled at init."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "LogRocket.identify(id, { name, email }) → linked; add name/email rows."
+        },
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Replays/network capture can include on-screen or request content unless sanitized."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "unknown",
+      "docs": "https://docs.logrocket.com/reference/apple-privacy-questionnaire"
+    },
+    {
+      "packages": [
+        "@react-native-firebase/analytics"
+      ],
+      "name": "Firebase Analytics / Google Analytics for Firebase",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "App instance ID (Android: also Advertising ID unless disabled)."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Automatic events: first_open, session_start, screen_view, etc."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Derived from (masked) IP."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Automatic in-app purchase events."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "setUserId() → linked."
+        },
+        {
+          "apple": "advertising_data",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Google Signals / Ads linking / IDFA (AdSupport) → tracking, needs ATT; Google: shared."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "requiresATT becomes true if IDFA collection (AdSupport) or ads personalization is enabled. Google says it is a service provider; 'shared' for Analytics is the developer's call.",
+      "docs": "https://firebase.google.com/docs/ios/app-store-data-collection"
+    },
+    {
+      "packages": [
+        "@react-native-firebase/crashlytics"
+      ],
+      "name": "Firebase Crashlytics",
+      "kind": "crash-reporting",
+      "data": [
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Always. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Device state, OS, model; custom keys/logs if set."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Crashlytics installation UUID / Firebase installation ID."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "crashlytics().setUserId() → linked."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://firebase.google.com/docs/android/play-data-disclosure"
+    },
+    {
+      "packages": [
+        "@react-native-firebase/messaging"
+      ],
+      "name": "Firebase Cloud Messaging",
+      "kind": "push",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "app_functionality",
+            "developer_communications"
+          ],
+          "note": "FCM/APNs token + Firebase installation ID. Linked when stored with the user on your server. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Device model, OS, app version, language, timezone sent with registration."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://firebase.google.com/docs/ios/app-store-data-collection"
+    },
+    {
+      "packages": [
+        "@react-native-firebase/auth"
+      ],
+      "name": "Firebase Authentication",
+      "kind": "auth",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "account_management",
+            "app_functionality"
+          ],
+          "note": "Firebase Auth UID."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Email/password, email link, Google/Apple sign-in."
+        },
+        {
+          "apple": "phone",
+          "google": "phone_number",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Phone auth."
+        },
+        {
+          "apple": "name",
+          "google": "name",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Display name from federated providers / updateProfile."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "IP address and user agent for abuse prevention (Android disclosure)."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://firebase.google.com/docs/android/play-data-disclosure"
+    },
+    {
+      "packages": [
+        "@react-native-firebase/firestore",
+        "@react-native-firebase/database",
+        "@react-native-firebase/storage"
+      ],
+      "name": "Firebase Firestore / Realtime Database / Storage",
+      "kind": "backend",
+      "data": [
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Whatever the app stores: map each collection/field to its real type (name, photos, messages…). Vendor acts as processor/service provider → Google: collected, not shared."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://firebase.google.com/docs/ios/app-store-data-collection"
+    },
+    {
+      "packages": [
+        "firebase"
+      ],
+      "name": "Firebase JS SDK (auth / firestore / storage)",
+      "kind": "backend",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "firebase/auth UID."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Email or federated sign-in."
+        },
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Firestore/Storage documents: map fields to real types."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "no",
+      "notes": "JS-only in React Native (no native iOS code, no manifest needed). firebase/analytics web SDK does not run in RN.",
+      "docs": "https://firebase.google.com/docs/ios/app-store-data-collection"
+    },
+    {
+      "packages": [
+        "expo-notifications"
+      ],
+      "name": "Expo Notifications (push token)",
+      "kind": "push",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "app_functionality",
+            "developer_communications"
+          ],
+          "note": "getExpoPushTokenAsync/getDevicePushTokenAsync token sent to Expo push service and usually stored on your server with the user → linked. Expo acts as processor → not shared."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://expo.dev/privacy-explained"
+    },
+    {
+      "packages": [
+        "expo-application",
+        "expo-device",
+        "react-native-device-info"
+      ],
+      "name": "Device info (expo-application / expo-device / react-native-device-info)",
+      "kind": "other",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Only if IDFV (getIosIdForVendorAsync), Android ID (getAndroidId) or getUniqueId is sent off device. Linked if stored with the user."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Only if device model/OS/app version are sent (e.g. in API headers stored in logs)."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Reading these values on device collects nothing. Google Play's device-identifier policy forbids linking Android ID with the advertising ID without consent.",
+      "docs": "https://docs.expo.dev/versions/latest/sdk/application/"
+    },
+    {
+      "packages": [
+        "expo-tracking-transparency",
+        "react-native-tracking-transparency"
+      ],
+      "name": "App Tracking Transparency (IDFA/AAID)",
+      "kind": "other",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing"
+          ],
+          "note": "getAdvertisingId() value sent off device (directly or via ads/attribution SDKs). The package itself sends nothing."
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "no",
+      "notes": "Presence alone signals intent to track: confirm which SDK uses the IDFA. If nothing tracks, remove the prompt.",
+      "docs": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency/"
+    },
+    {
+      "packages": [
+        "expo-updates"
+      ],
+      "name": "Expo Updates (EAS Update)",
+      "kind": "other",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Expo states update requests carry no unique device identifiers (OS, project id, runtime/update ids). The EAS-Client-ID header is a random per-install UUID (pseudonymous). Usually nothing to declare; declare Device ID (not linked) if you want to be conservative. Expo = processor."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Manifest comes from its dependency expo-eas-client (UserDefaults CA92.1).",
+      "docs": "https://docs.expo.dev/regulatory-compliance/data-and-privacy-protection/"
+    },
+    {
+      "packages": [
+        "expo-insights",
+        "expo-observe"
+      ],
+      "name": "Expo Insights / EAS Observe",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "EAS client id (random per-install UUID) sent on each launch. Not linked to a user by Expo. Expo = processor."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "App launch events with app version, platform, OS version."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Startup timing / EAS Observe performance metrics."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "unknown",
+      "docs": "https://docs.expo.dev/eas/observe/reference/client-id/"
+    },
+    {
+      "packages": [
+        "react-native-purchases",
+        "react-native-purchases-ui"
+      ],
+      "name": "RevenueCat",
+      "kind": "payments",
+      "data": [
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Always; cannot be disabled. Linked once Purchases.logIn(appUserId) / custom app user id is used. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "Custom app user id via configure({ appUserID }) or logIn()."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Only if setEmail / customer attributes. Same for name (setDisplayName) and phone (setPhoneNumber)."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "collectDeviceIdentifiers() / setAdjustID etc. for attribution integrations; IDFA only with ATT. Shared if forwarded to non-service-provider integrations."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy"
+    },
+    {
+      "packages": [
+        "@stripe/stripe-react-native"
+      ],
+      "name": "Stripe React Native",
+      "kind": "payments",
+      "data": [
+        {
+          "apple": "payment_info",
+          "google": "user_payment_info",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Card/bank details typed into PaymentSheet/CardField inside your app are collected by Stripe as your third-party partner (StripePaymentSheet manifest declares PaymentInfo, linked) → declare. Apple's exemption covers only payment entered outside your app that you never access (e.g. Apple Pay sheet only, external web checkout)."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "SDK usage telemetry (StripeCore manifest: linked, not tracking)."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Stripe Customer id / ephemeral key when using customers."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "Device characteristics for fraud prevention (Radar); 3DS2 sends IDFV, model, OS, language, timezone."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Billing details collection / Link."
+        },
+        {
+          "apple": "physical_address",
+          "google": "address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Billing/shipping address collection (AddressSheet)."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://support.stripe.com/questions/stripe-mobile-sdk-privacy-details"
+    },
+    {
+      "packages": [
+        "@supabase/supabase-js",
+        "@supabase/auth-js"
+      ],
+      "name": "Supabase (your backend)",
+      "kind": "backend",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management",
+            "app_functionality"
+          ],
+          "note": "auth.users id when Supabase Auth is used. Supabase is the developer's backend: collected by the developer, Supabase = processor → not shared."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Email/password, magic link, OAuth."
+        },
+        {
+          "apple": "phone",
+          "google": "phone_number",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Phone OTP auth."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "Auth audit logs store IP address/user agent. Apple: declare IP by use; Google: approximate_location only if used for location."
+        },
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Tables/Storage: map each column via schemaKeywords; don't rely on this row."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "no",
+      "notes": "JS-only; no native manifest needed.",
+      "docs": "https://supabase.com/legal/customer-resources/data-processing-addendum"
+    },
+    {
+      "packages": [
+        "@clerk/clerk-expo",
+        "@clerk/expo"
+      ],
+      "name": "Clerk",
+      "kind": "auth",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Clerk user id. Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Email identifier / OAuth."
+        },
+        {
+          "apple": "phone",
+          "google": "phone_number",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ]
+        },
+        {
+          "apple": "name",
+          "google": "name",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ]
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "Sessions store IP address, user agent and approximate location (shown in the Clerk dashboard)."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "unknown",
+      "docs": "https://clerk.com/legal/dpa"
+    },
+    {
+      "packages": [
+        "react-native-auth0"
+      ],
+      "name": "Auth0",
+      "kind": "auth",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Auth0.swift manifest declares UserID (linked, App Functionality). Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ],
+          "note": "Depends on tenant connections/scopes."
+        },
+        {
+          "apple": "name",
+          "google": "name",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "account_management"
+          ]
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "Tenant logs keep IP/user agent."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://github.com/auth0/Auth0.swift/blob/master/Auth0/PrivacyInfo.xcprivacy"
+    },
+    {
+      "packages": [
+        "posthog-react-native",
+        "posthog-react-native-session-replay"
+      ],
+      "name": "PostHog",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Lifecycle, screen and autocapture events. Linked after identify(). Vendor acts as processor/service provider → Google: collected, not shared."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Anonymous distinct_id generated per install."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "GeoIP enrichment server-side unless disabled in project settings."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "posthog.identify(id, { email, name }) → linked; add email/name rows if set as properties."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Error tracking / exception autocapture."
+        },
+        {
+          "apple": "other_usage_data",
+          "google": "other_actions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Session replay (posthog-react-native-session-replay). Masks text inputs/images by default; review masking."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "no",
+      "notes": "Core RN package is JS-only; the replay plugin uses posthog-ios, which ships a manifest.",
+      "docs": "https://posthog.com/docs/privacy/data-collection"
+    },
+    {
+      "packages": [
+        "@amplitude/analytics-react-native",
+        "@amplitude/session-replay-react-native"
+      ],
+      "name": "Amplitude",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Events and sessions. Amplitude-Swift manifest marks it linked."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "IDFV on iOS; on Android ADID/App Set ID by default (disable via trackingOptions)."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Derived from IP (city/region/country); can be disabled in trackingOptions."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Device model, OS, carrier, language."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "setUserId()."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "no",
+      "notes": "RN SDK doesn't read the IDFA. Its iOS folder has no manifest (Amplitude-Swift has one but isn't used by the RN SDK).",
+      "docs": "https://amplitude.com/docs/sdks/analytics/react-native/react-native-sdk"
+    },
+    {
+      "packages": [
+        "mixpanel-react-native"
+      ],
+      "name": "Mixpanel",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Events/sessions."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Mixpanel device id / distinct_id."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "City/region/country from IP unless IP geolocation is disabled."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "identify() / people.set → linked; add email/name rows if set as profile properties."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Mixpanel-swift manifest declares no data types; Mixpanel's legal page lists device id, usage data and coarse location.",
+      "docs": "https://mixpanel.com/legal/app-store-privacy-details/"
+    },
+    {
+      "packages": [
+        "@segment/analytics-react-native"
+      ],
+      "name": "Segment",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "track/screen events. Each destination plugin adds its own collection and may be 'shared'."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "anonymousId / device id (manifest: linked)."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "identify(userId, traits) → linked; traits like email/name add those rows."
+        },
+        {
+          "apple": "advertising_data",
+          "google": "device_or_other_ids",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising"
+          ],
+          "condition": "if-enabled",
+          "note": "Declared in Segment's manifest; IDFA plugin requires ATT."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/mobile/apple/ios-17"
+    },
+    {
+      "packages": [
+        "vexo-analytics"
+      ],
+      "name": "Vexo",
+      "kind": "analytics",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Includes session recordings (needs user consent and a visible indicator per Guideline 2.5.14). Vexo: collected, not shared."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Random per-install id."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "other_app_performance_data",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "note": "identifyDevice()."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "unknown",
+      "docs": "https://docs.vexo.co/react-native-guide/store-compliance"
+    },
+    {
+      "packages": [
+        "react-native-onesignal",
+        "onesignal-expo-plugin"
+      ],
+      "name": "OneSignal",
+      "kind": "push",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "app_functionality",
+            "developer_communications"
+          ],
+          "note": "Push subscription token / OneSignal ID. Linked when OneSignal.login(externalId) is used."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Sessions, notification opens/clicks."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Automatic in-app purchase tracking (vendor docs)."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "OneSignal.login(externalId)."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising",
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "developer_communications"
+          ],
+          "note": "addEmail(); likewise phone via addSms(), tags with name/custom data."
+        },
+        {
+          "apple": "precise_location",
+          "google": "precise_location",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising"
+          ],
+          "condition": "if-enabled",
+          "note": "Location.setShared(true) / location module."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "OneSignal docs don't state processor status explicitly; Google 'shared' answer: confirm with the DPA.",
+      "docs": "https://documentation.onesignal.com/docs/apple-app-privacy-requirements"
+    },
+    {
+      "packages": [
+        "customerio-reactnative"
+      ],
+      "name": "Customer.io",
+      "kind": "push",
+      "data": [
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "googlePurposes": [
+            "developer_communications",
+            "analytics"
+          ],
+          "note": "identify() → linked (manifest says not linked; docs say linked once identified)."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "developer_communications"
+          ],
+          "note": "Push token registered to the profile."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Screen/track events, push metrics."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "developer_communications"
+          ],
+          "note": "If passed as identify traits; phone likewise."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Customer.io docs: Expo apps must copy the SDK's manifest declarations into ios.privacyManifests.",
+      "docs": "https://docs.customer.io/accounts/security/mobile-privacy/"
+    },
+    {
+      "packages": [
+        "@braze/react-native-sdk",
+        "@braze/expo-plugin"
+      ],
+      "name": "Braze",
+      "kind": "push",
+      "data": [
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics",
+            "developer_advertising"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics",
+            "developer_communications"
+          ],
+          "note": "Sessions and events. Braze positions itself as service provider → not shared."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "app_functionality",
+            "developer_communications"
+          ],
+          "note": "Braze device id + push token."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-user-identified",
+          "note": "changeUser(externalId)."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Braze SDK internal crash logs (model, OS, Braze user id)."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "developer_communications"
+          ],
+          "note": "setEmail(); likewise name/phone/custom attributes."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising"
+          ],
+          "condition": "if-enabled",
+          "note": "Location module / geofences (precise if enabled)."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://www.braze.com/docs/developer_guide/analytics/managing_data_collection"
+    },
+    {
+      "packages": [
+        "react-native-branch"
+      ],
+      "name": "Branch",
+      "kind": "attribution",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Branch manifest: DeviceID linked + tracking; tracking domains used only after ATT opt-in."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Installs, opens, link clicks."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Not linked per manifest."
+        },
+        {
+          "apple": "browsing_history",
+          "google": "web_browsing_history",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Web-to-app journeys (Branch lists browsing history)."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": true,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Commerce events you log."
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "yes",
+      "notes": "requiresATT applies when paid-ad attribution/IDFA is used.",
+      "docs": "https://help.branch.io/v1/docs/answering-the-app-store-connect-privacy-questions"
+    },
+    {
+      "packages": [
+        "react-native-appsflyer"
+      ],
+      "name": "AppsFlyer",
+      "kind": "attribution",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "IDFA (after ATT) / IDFV / AAID. Manifest: linked + tracking."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "analytics",
+            "developer_advertising"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics",
+            "advertising_or_marketing"
+          ],
+          "note": "Installs, launches, in-app events."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": true,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "af_purchase / revenue events."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "if-user-identified",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "setCustomerUserId()."
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://support.appsflyer.com/hc/en-us/articles/21677433322641"
+    },
+    {
+      "packages": [
+        "react-native-adjust"
+      ],
+      "name": "Adjust",
+      "kind": "attribution",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "IDFA only with ATT consent; IDFV/AAID. Manifest: linked + tracking."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics",
+            "advertising_or_marketing"
+          ],
+          "note": "Sessions and events."
+        },
+        {
+          "apple": "other_data",
+          "google": "other_app_performance_data",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "OS/SDK version."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "note": "Revenue events / purchase verification."
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://help.adjust.com/en/article/submit-privacy-details-to-apple"
+    },
+    {
+      "packages": [
+        "react-native-google-mobile-ads"
+      ],
+      "name": "Google Mobile Ads (AdMob)",
+      "kind": "ads",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics",
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "IDFA (after ATT) / app-scoped ids; AAID on Android."
+        },
+        {
+          "apple": "advertising_data",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics",
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "Ad impressions/clicks and app interactions."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ]
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics",
+            "fraud_prevention_security_compliance"
+          ],
+          "note": "From IP address."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics",
+            "fraud_prevention_security_compliance"
+          ]
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "analytics",
+            "fraud_prevention_security_compliance"
+          ]
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Linked/tracking for personalized ads; with non-personalized ads only and no IDFA, confirm. Google lists all types as collected AND shared.",
+      "docs": "https://developers.google.com/admob/ios/privacy/data-disclosure"
+    },
+    {
+      "packages": [
+        "react-native-fbsdk-next"
+      ],
+      "name": "Facebook SDK (Meta)",
+      "kind": "ads",
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "FacebookCore manifest: DeviceID linked + tracking; NSPrivacyTracking true."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Automatic app events (install, launch) unless autoLogAppEventsEnabled=false."
+        },
+        {
+          "apple": "purchase_history",
+          "google": "purchase_history",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising",
+            "analytics"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing",
+            "analytics"
+          ],
+          "note": "Automatic IAP logging."
+        },
+        {
+          "apple": "crash_data",
+          "google": "crash_logs",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "SDK crash reports (not linked)."
+        },
+        {
+          "apple": "other_data",
+          "google": "other_app_performance_data",
+          "linked": false,
+          "tracking": false,
+          "shared": true,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Device attributes, network info incl. IP (not linked per manifest)."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Facebook Login app-scoped user id (+ email/name per granted permissions)."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": true,
+          "shared": true,
+          "purposes": [
+            "third_party_advertising"
+          ],
+          "condition": "if-enabled",
+          "googlePurposes": [
+            "advertising_or_marketing"
+          ],
+          "note": "Advanced Matching (also name, phone, address, gender, DOB)."
+        }
+      ],
+      "requiresATT": true,
+      "shipsPrivacyManifest": "yes",
+      "docs": "https://developers.facebook.com/blog/post/2022/07/18/resources-for-completing-app-store-data-practice-questionnaires-apps-facebook-or-audience-network-sdk/"
+    },
+    {
+      "packages": [
+        "@intercom/intercom-react-native"
+      ],
+      "name": "Intercom",
+      "kind": "support",
+      "data": [
+        {
+          "apple": "customer_support",
+          "google": "other_in_app_messages",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Messenger conversations."
+        },
+        {
+          "apple": "email",
+          "google": "email_address",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "developer_advertising",
+            "analytics"
+          ],
+          "condition": "always",
+          "googlePurposes": [
+            "app_functionality",
+            "developer_communications",
+            "analytics"
+          ],
+          "note": "From loginUserWithUserAttributes or the Messenger."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "user_id + Intercom device-level id."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "From IP."
+        },
+        {
+          "apple": "product_interaction",
+          "google": "app_interactions",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality",
+            "analytics"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "search_history",
+          "google": "in_app_search_history",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Help Center searches."
+        },
+        {
+          "apple": "photos_or_videos",
+          "google": "photos",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Attachments in conversations."
+        },
+        {
+          "apple": "performance_data",
+          "google": "diagnostics",
+          "linked": false,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Declared (not linked) in Intercom's manifest though its help article says diagnostics are not collected."
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Processor status not stated on the privacy-details page; confirm 'shared' with the DPA.",
+      "docs": "https://www.intercom.com/help/en/articles/4686934-apple-s-app-store-data-privacy-details-and-intercom-s-ios-sdk"
+    },
+    {
+      "packages": [
+        "react-native-zendesk-messaging"
+      ],
+      "name": "Zendesk Messaging",
+      "kind": "support",
+      "data": [
+        {
+          "apple": "customer_support",
+          "google": "other_in_app_messages",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "Conversation content."
+        },
+        {
+          "apple": "other_user_content",
+          "google": "other_user_generated_content",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always",
+          "note": "IP-derived city/country."
+        },
+        {
+          "apple": "user_id",
+          "google": "user_ids",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "always"
+        },
+        {
+          "apple": "name",
+          "google": "name",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Also email/phone when the user or JWT auth provides them; Zendesk says optional types must be declared in the app's own manifest."
+        },
+        {
+          "apple": "photos_or_videos",
+          "google": "photos",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "app_functionality"
+          ],
+          "condition": "if-enabled",
+          "note": "Attachments; audio attachments → audio_data."
+        },
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "linked": true,
+          "tracking": true,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "Zendesk's manifest (ZendeskSDKMessaging 2.19.2+) marks Device ID and Browsing History as tracking: confirm with Zendesk before answering."
+        },
+        {
+          "apple": "browsing_history",
+          "google": "web_browsing_history",
+          "linked": true,
+          "tracking": true,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always",
+          "note": "As declared in Zendesk's manifest; confirm."
+        },
+        {
+          "apple": "other_diagnostic_data",
+          "google": "diagnostics",
+          "linked": true,
+          "tracking": false,
+          "shared": false,
+          "purposes": [
+            "analytics"
+          ],
+          "condition": "always"
+        }
+      ],
+      "requiresATT": false,
+      "shipsPrivacyManifest": "yes",
+      "notes": "Community RN wrapper around the native Zendesk Messaging SDK.",
+      "docs": "https://support.zendesk.com/hc/en-us/articles/7334754169370-Zendesk-SDKs-and-app-privacy-details"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "location",
+      "packages": [
+        "expo-location",
+        "react-native-maps",
+        "@react-native-community/geolocation",
+        "react-native-geolocation-service"
+      ],
+      "iosKeys": [
+        "NSLocationWhenInUseUsageDescription",
+        "NSLocationAlwaysAndWhenInUseUsageDescription",
+        "NSLocationAlwaysUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ],
+      "configPluginOptions": [
+        "locationWhenInUsePermission",
+        "locationAlwaysAndWhenInUsePermission",
+        "locationAlwaysPermission"
+      ],
+      "codeSignals": [
+        "getCurrentPositionAsync",
+        "watchPositionAsync",
+        "getLastKnownPositionAsync",
+        "reverseGeocodeAsync",
+        "Geolocation.getCurrentPosition",
+        "Geolocation.watchPosition",
+        "showsUserLocation"
+      ],
+      "data": [
+        {
+          "apple": "precise_location",
+          "google": "precise_location",
+          "note": "Collected only if coordinates leave the device. Accuracy.Lowest/Low or rounding to < 3 decimals before sending → coarse_location / approximate_location."
+        },
+        {
+          "apple": "coarse_location",
+          "google": "approximate_location",
+          "note": "When only approximate location (iOS reduced accuracy, ACCESS_COARSE_LOCATION only, or coarsened server-side before storage) is sent."
+        }
+      ]
+    },
+    {
+      "id": "background_location",
+      "packages": [
+        "react-native-background-geolocation"
+      ],
+      "iosKeys": [
+        "NSLocationAlwaysAndWhenInUseUsageDescription",
+        "NSLocationAlwaysUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ],
+      "configPluginOptions": [
+        "isIosBackgroundLocationEnabled",
+        "isAndroidBackgroundLocationEnabled",
+        "isAndroidForegroundServiceEnabled",
+        "locationAlwaysAndWhenInUsePermission"
+      ],
+      "codeSignals": [
+        "startLocationUpdatesAsync",
+        "startGeofencingAsync",
+        "requestBackgroundPermissionsAsync"
+      ],
+      "data": [
+        {
+          "apple": "precise_location",
+          "google": "precise_location",
+          "note": "Ongoing background collection is never optional-disclosure. Google Play also requires the background-location permission declaration form and a prominent in-app disclosure."
+        }
+      ]
+    },
+    {
+      "id": "camera",
+      "packages": [
+        "expo-camera",
+        "expo-image-picker",
+        "react-native-vision-camera"
+      ],
+      "iosKeys": [
+        "NSCameraUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.CAMERA"
+      ],
+      "configPluginOptions": [
+        "cameraPermission"
+      ],
+      "codeSignals": [
+        "CameraView",
+        "takePictureAsync",
+        "recordAsync",
+        "launchCameraAsync",
+        "useCameraPermissions",
+        "useCameraDevice",
+        "takePhoto("
+      ],
+      "data": [
+        {
+          "apple": "photos_or_videos",
+          "google": "photos",
+          "note": "Collected only if captured photos are uploaded. Barcode/QR scanning processed on device is not collected. Use google `videos` for video uploads."
+        }
+      ]
+    },
+    {
+      "id": "photo_library_read",
+      "packages": [
+        "expo-image-picker",
+        "expo-media-library",
+        "@react-native-camera-roll/camera-roll"
+      ],
+      "iosKeys": [
+        "NSPhotoLibraryUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ],
+      "configPluginOptions": [
+        "photosPermission"
+      ],
+      "codeSignals": [
+        "launchImageLibraryAsync",
+        "getAssetsAsync",
+        "getAssetInfoAsync",
+        "CameraRoll.getPhotos"
+      ],
+      "data": [
+        {
+          "apple": "photos_or_videos",
+          "google": "photos",
+          "note": "Collected only if picked media is uploaded (avatars, posts, attachments). The system photo picker (launchImageLibraryAsync) on iOS 14+ / Android 13+ needs no full-library permission; Google Play restricts READ_MEDIA_IMAGES/VIDEO to apps with core broad photo access."
+        }
+      ]
+    },
+    {
+      "id": "photo_library_add",
+      "packages": [
+        "expo-media-library",
+        "@react-native-camera-roll/camera-roll"
+      ],
+      "iosKeys": [
+        "NSPhotoLibraryAddUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "configPluginOptions": [
+        "savePhotosPermission"
+      ],
+      "codeSignals": [
+        "saveToLibraryAsync",
+        "createAssetAsync",
+        "CameraRoll.save"
+      ],
+      "data": []
+    },
+    {
+      "id": "media_library",
+      "packages": [
+        "expo-media-library"
+      ],
+      "iosKeys": [
+        "NSPhotoLibraryUsageDescription",
+        "NSAppleMusicUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ],
+      "configPluginOptions": [
+        "photosPermission",
+        "isAccessMediaLocationEnabled",
+        "granularPermissions"
+      ],
+      "codeSignals": [
+        "MediaLibrary.getAssetsAsync",
+        "MediaLibrary.getAlbumsAsync",
+        "MediaLibrary.requestPermissionsAsync"
+      ],
+      "data": [
+        {
+          "apple": "photos_or_videos",
+          "google": "photos",
+          "note": "Only if media or metadata leaves the device. Audio files → apple audio_data / google music_files or other_audio_files. EXIF location (ACCESS_MEDIA_LOCATION) uploaded with photos → precise_location."
+        }
+      ]
+    },
+    {
+      "id": "microphone",
+      "packages": [
+        "expo-audio",
+        "expo-av",
+        "expo-camera",
+        "expo-image-picker",
+        "react-native-audio-recorder-player"
+      ],
+      "iosKeys": [
+        "NSMicrophoneUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "configPluginOptions": [
+        "microphonePermission",
+        "recordAudioAndroid"
+      ],
+      "codeSignals": [
+        "useAudioRecorder",
+        "Audio.Recording",
+        "requestRecordingPermissionsAsync",
+        "prepareToRecordAsync",
+        "startRecorder("
+      ],
+      "data": [
+        {
+          "apple": "audio_data",
+          "google": "voice_or_sound_recordings",
+          "note": "Collected only if recordings (or transcripts sent to a server) leave the device. Server-side speech-to-text with no retention may qualify as ephemeral (Google) / not collected (Apple)."
+        }
+      ]
+    },
+    {
+      "id": "speech_recognition",
+      "packages": [
+        "expo-speech-recognition",
+        "@react-native-voice/voice"
+      ],
+      "iosKeys": [
+        "NSSpeechRecognitionUsageDescription",
+        "NSMicrophoneUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "configPluginOptions": [
+        "speechRecognitionPermission",
+        "microphonePermission"
+      ],
+      "codeSignals": [
+        "ExpoSpeechRecognitionModule.start",
+        "useSpeechRecognitionEvent",
+        "Voice.start("
+      ],
+      "data": [
+        {
+          "apple": "audio_data",
+          "google": "voice_or_sound_recordings",
+          "note": "Apple/Google speech services process audio for you (requiresOnDeviceRecognition avoids it). Declare if audio or transcripts are sent to your server or a third-party STT API; transcripts stored → other_user_content."
+        }
+      ]
+    },
+    {
+      "id": "contacts",
+      "packages": [
+        "expo-contacts",
+        "react-native-contacts"
+      ],
+      "iosKeys": [
+        "NSContactsUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
+      ],
+      "configPluginOptions": [
+        "contactsPermission"
+      ],
+      "codeSignals": [
+        "getContactsAsync",
+        "getContactByIdAsync",
+        "presentContactPickerAsync",
+        "Contacts.getAll"
+      ],
+      "data": [
+        {
+          "apple": "contacts",
+          "google": "contacts",
+          "note": "Uploading the address book (friend finding, invites) is collection; hashing phone numbers does not make it unlinked. Google Play's User Data policy requires prominent disclosure and consent for contact upload."
+        }
+      ]
+    },
+    {
+      "id": "calendar",
+      "packages": [
+        "expo-calendar",
+        "react-native-calendar-events"
+      ],
+      "iosKeys": [
+        "NSCalendarsUsageDescription",
+        "NSCalendarsFullAccessUsageDescription",
+        "NSCalendarsWriteOnlyAccessUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ],
+      "configPluginOptions": [
+        "calendarPermission",
+        "writeOnlyCalendarPermission"
+      ],
+      "codeSignals": [
+        "getCalendarsAsync",
+        "getEventsAsync",
+        "createEventAsync",
+        "createEventInCalendarAsync"
+      ],
+      "data": [
+        {
+          "apple": "other_user_content",
+          "google": "calendar_events",
+          "note": "Only if event data is read and sent off device. Write-only (adding an event) collects nothing. Apple has no calendar type: use other_user_content (or other_data)."
+        }
+      ]
+    },
+    {
+      "id": "reminders",
+      "packages": [
+        "expo-calendar"
+      ],
+      "iosKeys": [
+        "NSRemindersUsageDescription",
+        "NSRemindersFullAccessUsageDescription"
+      ],
+      "androidPermissions": [],
+      "configPluginOptions": [
+        "remindersPermission"
+      ],
+      "codeSignals": [
+        "getRemindersAsync",
+        "createReminderAsync"
+      ],
+      "data": [
+        {
+          "apple": "other_user_content",
+          "google": "calendar_events",
+          "note": "Only if reminders are sent off device."
+        }
+      ]
+    },
+    {
+      "id": "motion",
+      "packages": [
+        "expo-sensors",
+        "react-native-sensors"
+      ],
+      "iosKeys": [
+        "NSMotionUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.HIGH_SAMPLING_RATE_SENSORS"
+      ],
+      "configPluginOptions": [
+        "motionPermission",
+        "motionUsagePermission",
+        "isAndroidMotionActivityEnabled"
+      ],
+      "codeSignals": [
+        "Pedometer.",
+        "DeviceMotion.",
+        "Accelerometer.",
+        "Gyroscope.",
+        "getStepCountAsync"
+      ],
+      "data": [
+        {
+          "apple": "fitness",
+          "google": "fitness_info",
+          "note": "Step counts / activity sent off device are fitness data (Apple names the Motion and Fitness API). Raw sensor readings used only on device are not collected."
+        }
+      ]
+    },
+    {
+      "id": "health",
+      "packages": [
+        "@kingstinct/react-native-healthkit",
+        "react-native-health",
+        "react-native-health-connect",
+        "expo-health-connect"
+      ],
+      "iosKeys": [
+        "NSHealthShareUsageDescription",
+        "NSHealthUpdateUsageDescription",
+        "NSHealthClinicalHealthRecordsShareUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_EXERCISE",
+        "android.permission.health.READ_SLEEP",
+        "android.permission.health.READ_WEIGHT"
+      ],
+      "configPluginOptions": [
+        "NSHealthShareUsageDescription",
+        "NSHealthUpdateUsageDescription",
+        "healthSharePermission",
+        "healthUpdatePermission"
+      ],
+      "codeSignals": [
+        "queryQuantitySamples",
+        "requestAuthorization",
+        "initHealthKit",
+        "readRecords(",
+        "getSampleRequest"
+      ],
+      "data": [
+        {
+          "apple": "health",
+          "google": "health_info",
+          "note": "HealthKit/Health Connect data sent off device. Apple 5.1.3 forbids using it for ads/marketing or storing it in iCloud; Google Play requires the Health Connect declaration form."
+        },
+        {
+          "apple": "fitness",
+          "google": "fitness_info",
+          "note": "Workouts, steps, calories."
+        }
+      ]
+    },
+    {
+      "id": "bluetooth",
+      "packages": [
+        "react-native-ble-plx",
+        "react-native-ble-manager"
+      ],
+      "iosKeys": [
+        "NSBluetoothAlwaysUsageDescription",
+        "NSBluetoothPeripheralUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADVERTISE"
+      ],
+      "configPluginOptions": [
+        "bluetoothAlwaysPermission",
+        "bluetoothPeripheralPermission",
+        "isBackgroundEnabled",
+        "neverForLocation"
+      ],
+      "codeSignals": [
+        "new BleManager",
+        "startDeviceScan",
+        "BleManager.scan"
+      ],
+      "data": [
+        {
+          "apple": "other_data",
+          "google": "device_or_other_ids",
+          "note": "Nothing collected unless scan results / peripheral ids or readings leave the device. Readings from health devices → health/fitness. BLE scanning without neverForLocation can infer location (Android)."
+        }
+      ]
+    },
+    {
+      "id": "local_network",
+      "packages": [
+        "react-native-zeroconf",
+        "react-native-tcp-socket",
+        "react-native-udp"
+      ],
+      "iosKeys": [
+        "NSLocalNetworkUsageDescription",
+        "NSBonjourServices"
+      ],
+      "androidPermissions": [
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.CHANGE_WIFI_MULTICAST_STATE"
+      ],
+      "configPluginOptions": [],
+      "codeSignals": [
+        "new Zeroconf",
+        "TcpSocket.createConnection",
+        "dgram.createSocket"
+      ],
+      "data": []
+    },
+    {
+      "id": "notifications",
+      "packages": [
+        "expo-notifications",
+        "@react-native-firebase/messaging",
+        "react-native-onesignal",
+        "@notifee/react-native"
+      ],
+      "iosKeys": [],
+      "androidPermissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ],
+      "configPluginOptions": [
+        "enableBackgroundRemoteNotifications"
+      ],
+      "codeSignals": [
+        "getExpoPushTokenAsync",
+        "getDevicePushTokenAsync",
+        "messaging().getToken",
+        "Notifications.requestPermissionsAsync",
+        "OneSignal.Notifications.requestPermission"
+      ],
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "note": "A push token stored on your server (or by Expo/OneSignal/FCM) is a device-level identifier, linked when stored with the user. Google purpose: developer_communications for marketing pushes. Notification permission itself collects nothing."
+        }
+      ]
+    },
+    {
+      "id": "tracking",
+      "packages": [
+        "expo-tracking-transparency",
+        "react-native-tracking-transparency"
+      ],
+      "iosKeys": [
+        "NSUserTrackingUsageDescription"
+      ],
+      "androidPermissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ],
+      "configPluginOptions": [
+        "userTrackingPermission"
+      ],
+      "codeSignals": [
+        "requestTrackingPermissionsAsync",
+        "getTrackingPermissionsAsync",
+        "getAdvertisingId",
+        "requestTrackingPermission"
+      ],
+      "data": [
+        {
+          "apple": "device_id",
+          "google": "device_or_other_ids",
+          "note": "IDFA/AAID sent off device (usually by ads/attribution SDKs) = Device ID used for tracking. The ATT prompt is required before tracking; label tracking types regardless of the user's answer."
+        }
+      ]
+    },
+    {
+      "id": "biometrics",
+      "packages": [
+        "expo-local-authentication",
+        "react-native-biometrics",
+        "react-native-keychain"
+      ],
+      "iosKeys": [
+        "NSFaceIDUsageDescription"
+      ],
+      "androidPermissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ],
+      "configPluginOptions": [
+        "faceIDPermission"
+      ],
+      "codeSignals": [
+        "authenticateAsync",
+        "hasHardwareAsync",
+        "isEnrolledAsync",
+        "simplePrompt(",
+        "ACCESS_CONTROL.BIOMETRY"
+      ],
+      "data": []
+    }
+  ],
+  "schemaKeywords": [
+    {
+      "pattern": "(^|_)(email|e_mail|email_address|mail)($|_)",
+      "apple": "email",
+      "google": "email_address"
+    },
+    {
+      "pattern": "(^|_)(phone|phone_number|mobile_number|mobile_phone|msisdn|tel|telephone)($|_)",
+      "apple": "phone",
+      "google": "phone_number"
+    },
+    {
+      "pattern": "(^|_)(first_name|last_name|full_name|display_name|given_name|family_name|surname|firstname|lastname|fullname|nickname)($|_)",
+      "apple": "name",
+      "google": "name"
+    },
+    {
+      "pattern": "^name$",
+      "apple": "name",
+      "google": "name",
+      "note": "Only when the table is about users/profiles/contacts"
+    },
+    {
+      "pattern": "(^|_)(username|user_name|handle|screen_name)($|_)",
+      "apple": "user_id",
+      "google": "user_ids"
+    },
+    {
+      "pattern": "^(user_id|userid|account_id|customer_id|profile_id|owner_id|author_id|member_id|auth_id)$",
+      "apple": "user_id",
+      "google": "user_ids"
+    },
+    {
+      "pattern": "^(?!(.*_)?(ip|email|e_mail|mac|wallet|remote|web|url)_?addr)(.*_)?(address|street|street_address|address_line\\d?|city|postcode|postal_code|zip|zip_code|zipcode|province|country)($|_)",
+      "apple": "physical_address",
+      "google": "address",
+      "note": "city/country alone may be coarse location instead"
+    },
+    {
+      "pattern": "(^|_)(birth|birthday|birthdate|dob|date_of_birth|age)($|_)",
+      "apple": "other_data",
+      "google": "other_info",
+      "note": "Apple has no DOB type: other_data (or sensitive_info if used for profiling)"
+    },
+    {
+      "pattern": "(^|_)(gender|sex|pronouns)($|_)",
+      "apple": "other_data",
+      "google": "other_info",
+      "note": "Gender identity → Google other_info; Apple other_data unless sensitive context"
+    },
+    {
+      "pattern": "(^|_)(race|ethnicity|religion|religious|political|sexual_orientation|orientation|disability|pregnan\\w*|union_member\\w*)($|_)",
+      "apple": "sensitive_info",
+      "google": "race_and_ethnicity",
+      "note": "Pick the exact Google type (race_and_ethnicity / political_or_religious_beliefs / sexual_orientation / other_info)"
+    },
+    {
+      "pattern": "(^|_)(diagnosis|diagnoses|symptom\\w*|medication\\w*|allerg\\w*|blood_\\w+|glucose|cycle_day|cycle_length|period_start|menstrua\\w*|medical\\w*|health_\\w+)($|_)",
+      "apple": "health",
+      "google": "health_info"
+    },
+    {
+      "pattern": "(^|_)(weight|height|bmi|body_fat|heart_rate|hr|resting_hr|vo2\\w*|sleep\\w*)($|_)",
+      "apple": "health",
+      "google": "health_info",
+      "note": "Body measurements: health (or fitness if exercise-only)"
+    },
+    {
+      "pattern": "(^|_)(steps|step_count|calories|kcal|distance|pace|workout\\w*|exercise\\w*|training\\w*|reps|sets|activity_level)($|_)",
+      "apple": "fitness",
+      "google": "fitness_info"
+    },
+    {
+      "pattern": "(^|_)(avatar|avatar_url|photo|photo_url|picture|image|image_url|img|thumbnail|selfie|profile_pic\\w*)($|_)",
+      "apple": "photos_or_videos",
+      "google": "photos",
+      "note": "Only user-provided media; app-owned images (product catalog) are not user data"
+    },
+    {
+      "pattern": "(^|_)(video|video_url|clip|recording_url)($|_)",
+      "apple": "photos_or_videos",
+      "google": "videos"
+    },
+    {
+      "pattern": "(^|_)(audio|audio_url|voice\\w*|voice_note|recording)($|_)",
+      "apple": "audio_data",
+      "google": "voice_or_sound_recordings"
+    },
+    {
+      "pattern": "(^|_)(file|file_url|file_path|document\\w*|attachment\\w*|upload\\w*)($|_)",
+      "apple": "other_user_content",
+      "google": "files_and_docs"
+    },
+    {
+      "pattern": "(^|_)(message|messages|chat|dm|direct_message|conversation\\w*|inbox|sms)($|_)",
+      "apple": "emails_or_text_messages",
+      "google": "other_in_app_messages"
+    },
+    {
+      "pattern": "(^|_)(comment|comments|note|notes|post|posts|body|content(?!_type)|text|caption|bio|description|review|journal|entry)($|_)",
+      "apple": "other_user_content",
+      "google": "other_user_generated_content",
+      "note": "Generic text columns: confirm the table holds user-generated content"
+    },
+    {
+      "pattern": "(^|_)(ticket|support_request|feedback)($|_)",
+      "apple": "customer_support",
+      "google": "other_user_generated_content"
+    },
+    {
+      "pattern": "(^|_)(lat|lng|lon|latitude|longitude|geo|geom|geog|geography|geolocation|coordinates|location|last_location|gps)($|_)",
+      "apple": "precise_location",
+      "google": "precise_location",
+      "note": "Coarse if rounded to < 3 decimals / city-level before storage"
+    },
+    {
+      "pattern": "(^|_)(timezone|time_zone|locale|region|geo_country|country_code)($|_)",
+      "apple": "coarse_location",
+      "google": "approximate_location",
+      "note": "Only if used as location; locale alone is usually not location"
+    },
+    {
+      "pattern": "(^|_)(card_number|card_last4|card_brand|card_exp\\w*|last4|cvv|iban|bic|swift|bank_account|account_number|routing_number|payment_method\\w*)($|_)",
+      "apple": "payment_info",
+      "google": "user_payment_info",
+      "note": "last4/brand from Stripe still payment info if stored with the user"
+    },
+    {
+      "pattern": "(^|_)(stripe_customer\\w*|stripe_\\w*id|paypal\\w*|braintree\\w*|payment\\w*)($|_)",
+      "apple": "purchase_history",
+      "google": "purchase_history",
+      "note": "Processor customer ids → purchase_history (+ user_id); card data itself → payment_info"
+    },
+    {
+      "pattern": "(^|_)(purchase\\w*|subscription_\\w+|subscriptions|orders|order_id|order_total|transaction\\w*|receipt\\w*|invoice\\w*|entitlement\\w*|revenuecat\\w*)($|_)",
+      "apple": "purchase_history",
+      "google": "purchase_history"
+    },
+    {
+      "pattern": "(^|_)(salary|income|net_worth|debt|loan|account_balance|budget|expense\\w*)($|_)",
+      "apple": "other_financial_info",
+      "google": "other_financial_info"
+    },
+    {
+      "pattern": "(^|_)(credit_score|credit_rating|fico)($|_)",
+      "apple": "credit_info",
+      "google": "credit_score"
+    },
+    {
+      "pattern": "(^|_)(push_token|expo_push_token|device_token|fcm_token|apns_token|onesignal_id|player_id|registration_token)($|_)",
+      "apple": "device_id",
+      "google": "device_or_other_ids"
+    },
+    {
+      "pattern": "(^|_)(device_id|deviceid|installation_id|install_id|idfv|idfa|gaid|aaid|ad_id|advertising_id|android_id|vendor_id)($|_)",
+      "apple": "device_id",
+      "google": "device_or_other_ids",
+      "note": "idfa/gaid/aaid usually means tracking"
+    },
+    {
+      "pattern": "(^|_)(ip|ip_address|ipaddress|ip_addr|remote_addr|client_ip|x_forwarded_for)($|_)",
+      "apple": "other_diagnostic_data",
+      "google": "approximate_location",
+      "note": "Apple: declare IP by use (coarse_location, device_id or diagnostics). Google: declare approximate_location if used for location"
+    },
+    {
+      "pattern": "(^|_)(user_agent|device_model|os_version|app_version|platform|build_number)($|_)",
+      "apple": "other_diagnostic_data",
+      "google": "diagnostics"
+    },
+    {
+      "pattern": "(^|_)(search|search_query|query|search_term|keyword|keywords)($|_)",
+      "apple": "search_history",
+      "google": "in_app_search_history",
+      "note": "Only when it stores the user's searches"
+    },
+    {
+      "pattern": "(^|_)(visited_url|page_url|browsing\\w*|history_url|web_history)($|_)",
+      "apple": "browsing_history",
+      "google": "web_browsing_history",
+      "note": "Only for websites visited outside the app (in-app browser history)"
+    },
+    {
+      "pattern": "(^|_)(event|event_name|events|screen_view|page_view|tap|click\\w*|last_seen\\w*|last_active\\w*|session\\w*)($|_)",
+      "apple": "product_interaction",
+      "google": "app_interactions"
+    },
+    {
+      "pattern": "(^|_)(like|likes|favorite\\w*|bookmark\\w*|follow\\w*|vote\\w*|reaction\\w*|rating)($|_)",
+      "apple": "other_usage_data",
+      "google": "other_actions"
+    },
+    {
+      "pattern": "(^|_)(game_score|high_score|save_game|game_state|savegame|achievement\\w*|leaderboard\\w*|matchmaking)($|_)",
+      "apple": "gameplay_content",
+      "google": "other_actions"
+    },
+    {
+      "pattern": "(^|_)(contacts|contact_list|phonebook|address_book|friends|followers|following)($|_)",
+      "apple": "contacts",
+      "google": "contacts",
+      "note": "Social graph counts as contacts"
+    },
+    {
+      "pattern": "(^|_)(calendar\\w*|event_start|starts_at|attendee\\w*)($|_)",
+      "apple": "other_user_content",
+      "google": "calendar_events",
+      "note": "Only when imported from the user's calendar"
+    },
+    {
+      "pattern": "(^|_)(installed_apps|app_list|packages_installed)($|_)",
+      "apple": "other_data",
+      "google": "installed_apps"
+    },
+    {
+      "pattern": "(^|_)(crash\\w*|stack_trace|stacktrace|error_log|exception\\w*)($|_)",
+      "apple": "crash_data",
+      "google": "crash_logs"
+    },
+    {
+      "pattern": "(^|_)(ad_click\\w*|ad_impression\\w*|campaign\\w*|utm_\\w+|attribution\\w*|install_referrer)($|_)",
+      "apple": "advertising_data",
+      "google": "app_interactions",
+      "note": "Attribution/campaign data; check whether it is used for tracking"
+    },
+    {
+      "pattern": "(^|_)(social_handle|instagram|twitter|tiktok|linkedin|website|telegram|whatsapp)($|_)",
+      "apple": "other_contact_info",
+      "google": "other_info"
+    },
+    {
+      "pattern": "(^|_)(ssn|national_id|passport\\w*|tax_id|driver_license\\w*|id_document\\w*)($|_)",
+      "apple": "sensitive_info",
+      "google": "other_info",
+      "note": "Government ids: high-risk; confirm need and storage"
+    },
+    {
+      "pattern": "(^|_)(face_\\w+|fingerprint\\w*|biometric\\w*|voiceprint)($|_)",
+      "apple": "sensitive_info",
+      "google": "other_info",
+      "note": "Biometric data that leaves the device (local Face ID/Touch ID never does)"
+    }
+  ],
+  "requiredReasonApis": [
+    {
+      "category": "NSPrivacyAccessedAPICategoryUserDefaults",
+      "apis": [
+        "UserDefaults / NSUserDefaults"
+      ],
+      "reasons": [
+        {
+          "code": "CA92.1",
+          "meaning": "Read/write information accessible only to the app itself (not other apps or the system)."
+        },
+        {
+          "code": "1C8F.1",
+          "meaning": "Read/write information accessible only to apps, app extensions and App Clips in the same App Group."
+        },
+        {
+          "code": "C56D.1",
+          "meaning": "Third-party SDK wrapper around user defaults, accessed only when the app calls the wrapper. SDKs only; not for SDKs created primarily to wrap required-reason APIs."
+        },
+        {
+          "code": "AC6B.1",
+          "meaning": "Read com.apple.configuration.managed (MDM managed app configuration) or set com.apple.feedback.managed (MDM feedback)."
+        }
+      ],
+      "typicalSources": [
+        "react-native",
+        "expo-constants",
+        "expo-notifications",
+        "expo-localization",
+        "expo-updates",
+        "expo-eas-client",
+        "react-native-device-info",
+        "@react-native-async-storage/async-storage",
+        "react-native-mmkv",
+        "react-native-default-preference",
+        "@intercom/intercom-react-native",
+        "@sentry/react-native",
+        "@react-native-firebase/*",
+        "react-native-purchases",
+        "react-native-onesignal",
+        "expo-*"
+      ]
+    },
+    {
+      "category": "NSPrivacyAccessedAPICategoryFileTimestamp",
+      "apis": [
+        "creationDate",
+        "modificationDate",
+        "fileModificationDate",
+        "contentModificationDateKey",
+        "creationDateKey",
+        "getattrlist",
+        "getattrlistbulk",
+        "fgetattrlist",
+        "stat",
+        "fstat",
+        "fstatat",
+        "lstat",
+        "getattrlistat"
+      ],
+      "reasons": [
+        {
+          "code": "DDA9.1",
+          "meaning": "Display file timestamps to the person using the device; not sent off device."
+        },
+        {
+          "code": "C617.1",
+          "meaning": "Access timestamps, size or other metadata of files inside the app container, app group container or the app's CloudKit container."
+        },
+        {
+          "code": "3B52.1",
+          "meaning": "Access timestamps, size or other metadata of files or directories the user specifically granted access to (e.g. document picker)."
+        },
+        {
+          "code": "0A2A.1",
+          "meaning": "Third-party SDK wrapper around file timestamp APIs, accessed only when the app calls the wrapper. SDKs only."
+        }
+      ],
+      "typicalSources": [
+        "react-native",
+        "expo-file-system",
+        "expo-application",
+        "expo-document-picker",
+        "expo-image-picker",
+        "expo-sqlite",
+        "@react-native-async-storage/async-storage",
+        "react-native-device-info",
+        "react-native-fs",
+        "react-native-blob-util",
+        "@shopify/react-native-skia",
+        "expo-*"
+      ]
+    },
+    {
+      "category": "NSPrivacyAccessedAPICategorySystemBootTime",
+      "apis": [
+        "systemUptime",
+        "mach_absolute_time()"
+      ],
+      "reasons": [
+        {
+          "code": "35F9.1",
+          "meaning": "Measure elapsed time between events within the app or perform timer calculations; only elapsed-time info may leave the device."
+        },
+        {
+          "code": "8FFB.1",
+          "meaning": "Calculate absolute timestamps for events within the app (e.g. UIKit/AVFAudio events); the timestamps may leave the device, boot time may not."
+        },
+        {
+          "code": "3D61.1",
+          "meaning": "Include system boot time in an optional bug report the user chooses to submit, prominently shown to them."
+        }
+      ],
+      "typicalSources": [
+        "react-native",
+        "expo-device",
+        "react-native-device-info",
+        "react-native-reanimated",
+        "@sentry/react-native",
+        "@datadog/mobile-react-native",
+        "expo-*"
+      ]
+    },
+    {
+      "category": "NSPrivacyAccessedAPICategoryDiskSpace",
+      "apis": [
+        "volumeAvailableCapacityKey",
+        "volumeAvailableCapacityForImportantUsageKey",
+        "volumeAvailableCapacityForOpportunisticUsageKey",
+        "volumeTotalCapacityKey",
+        "systemFreeSize",
+        "systemSize",
+        "statfs",
+        "statvfs",
+        "fstatfs",
+        "fstatvfs",
+        "getattrlist",
+        "fgetattrlist",
+        "getattrlistat"
+      ],
+      "reasons": [
+        {
+          "code": "85F4.1",
+          "meaning": "Display disk space information to the person using the device; not sent off device (local-network exception with explicit permission)."
+        },
+        {
+          "code": "E174.1",
+          "meaning": "Check whether there is enough disk space to write files, or whether space is low so the app can delete files; behavior must be observable. May skip downloads when space is insufficient."
+        },
+        {
+          "code": "7D9E.1",
+          "meaning": "Include disk space in an optional bug report the user chooses to submit, prominently shown to them."
+        },
+        {
+          "code": "B728.1",
+          "meaning": "Health research app informing participants about low disk space affecting research data collection."
+        }
+      ],
+      "typicalSources": [
+        "expo-file-system",
+        "react-native-device-info",
+        "react-native-fs",
+        "react-native-blob-util",
+        "@sentry/react-native",
+        "expo-*"
+      ]
+    },
+    {
+      "category": "NSPrivacyAccessedAPICategoryActiveKeyboards",
+      "apis": [
+        "activeInputModes"
+      ],
+      "reasons": [
+        {
+          "code": "3EC4.1",
+          "meaning": "The app is a custom keyboard app and checks which keyboards are active; providing a system-wide keyboard is its primary functionality."
+        },
+        {
+          "code": "54BD.1",
+          "meaning": "Present the correct customized UI based on active keyboards; the app has text fields and behaves observably differently."
+        }
+      ],
+      "typicalSources": [
+        "react-native-keyboard-controller",
+        "react-native-device-info"
+      ]
+    }
+  ]
+}

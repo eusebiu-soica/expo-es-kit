@@ -10,8 +10,8 @@
   "plugins": [
     {
       "name": "expo-es-kit",
-      "version": "0.1.0",
-      "description": "Scored multi-agent audits, CLAUDE.md setup, backend/API security, foundation scaffolding, verified fixes and HeroUI Native audits for Expo apps.",
+      "version": "0.2.0",
+      "description": "Scored multi-agent audits, verified fixes, CLAUDE.md setup, backend/API security, foundation scaffolding, store privacy forms, SDK upgrades, audit history and HeroUI Native audits for Expo apps.",
       "source": "./"
     }
   ]

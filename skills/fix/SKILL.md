@@ -1,6 +1,6 @@
 ---
 name: fix
-description: Apply the findings of an expo-es-kit audit to an Expo / React Native app in priority order (P0 first), then run a mandatory end-to-end verification — typecheck, lint, tests, expo-doctor, per-finding verification by an independent agent, regression scan and re-audit of the touched categories — and report before/after scores. Use when the user says "fix the audit", "apply the fixes", "fix P0", or after /expo-es-kit:audit.
+description: "Apply the findings of an expo-es-kit audit to an Expo / React Native app in priority order (P0 first), then run a mandatory end-to-end verification — typecheck, lint, tests, expo-doctor, per-finding verification by an independent agent, regression scan and re-audit of the touched categories — and report before/after scores. Use when the user says \"fix the audit\", \"apply the fixes\", \"fix P0\", or after /expo-es-kit:audit."
 argument-hint: "[report.json] [--only=P0|P0,P1|<finding ids>|<category ids>] [--yes]"
 ---
 

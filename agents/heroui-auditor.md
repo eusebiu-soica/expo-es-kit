@@ -1,6 +1,6 @@
 ---
 name: heroui-auditor
-description: HeroUI Native auditor for Expo apps: granular imports, sheet mounting, skeleton cost, design-token adoption (colors, typography, spacing, radius), overdraw, animations/reduced motion, accessibility. Used by the expo-es-kit audit skill in deep mode only when heroui-native is installed; read-only.
+description: "HeroUI Native auditor for Expo apps: granular imports, sheet mounting, skeleton cost, design-token adoption (colors, typography, spacing, radius), overdraw, animations/reduced motion, accessibility. Used by the expo-es-kit audit skill in deep mode only when heroui-native is installed; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: pink

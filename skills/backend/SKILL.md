@@ -1,6 +1,6 @@
 ---
 name: backend
-description: Design, audit or implement the backend side of an Expo / React Native app securely, in either mode — direct database access from the app (Supabase + RLS, RPCs, storage policies) or an API hosted elsewhere (Next.js route handlers on Vercel, Supabase Edge Functions, Expo API Routes on EAS Hosting) — including auth and session correctness end to end (token storage, refresh, PKCE, server-side JWT verification, IDOR/BOLA, rate limits, sign-out). Use when the user asks about app↔backend architecture, API security, RLS, "is my API secure", auth/sessions, or wants to build an API endpoint for the app.
+description: "Design, audit or implement the backend side of an Expo / React Native app securely, in either mode — direct database access from the app (Supabase + RLS, RPCs, storage policies) or an API hosted elsewhere (Next.js route handlers on Vercel, Supabase Edge Functions, Expo API Routes on EAS Hosting) — including auth and session correctness end to end (token storage, refresh, PKCE, server-side JWT verification, IDOR/BOLA, rate limits, sign-out). Use when the user asks about app↔backend architecture, API security, RLS, \"is my API secure\", auth/sessions, or wants to build an API endpoint for the app."
 argument-hint: "[design|audit|implement] [appPath] [--api=<apiRepoPath>] [--framework=nextjs|supabase-edge|expo-api-routes]"
 ---
 

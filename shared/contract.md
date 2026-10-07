@@ -117,6 +117,7 @@ Each auditor agent returns exactly one fenced JSON block:
 ```
 
 A fix run writes the same shape with `"type": "fix"` plus `"before": { "<categoryId>": score }`.
+Other report types written by the kit: `"backend-audit"`, `"heroui-audit"`, `"upgrade"`. `scripts/history.mjs` charts only `"audit"` reports (and counts `"fix"` runs).
 
 ## Report location
 
