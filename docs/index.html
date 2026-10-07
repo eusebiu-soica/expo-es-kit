@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>expo-es-kit · Production-ready Expo apps with Claude Code</title>
+<meta name="description" content="A Claude Code plugin that audits, fixes and guards Expo & React Native apps: scored multi-agent audits, verified fixes, per-folder agent rules, backend & auth security, store privacy forms and safe SDK upgrades.">
+<meta name="theme-color" content="#0a0b0f">
+<link rel="canonical" href="https://eusebiu-soica.github.io/expo-es-kit/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="expo-es-kit · Production-ready Expo apps with Claude Code">
+<meta property="og:description" content="Scored multi-agent audits, verified fixes, agent rules, backend & auth security, store privacy forms and safe SDK upgrades for Expo apps.">
+<meta property="og:url" content="https://eusebiu-soica.github.io/expo-es-kit/">
+<meta property="og:image" content="https://eusebiu-soica.github.io/expo-es-kit/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 6.5v8.7C4 22.6 9.1 28.4 16 30c6.9-1.6 12-7.4 12-14.8V6.5L16 2Z' fill='%23ff7a45'/%3E%3Cpath d='m11 16.2 3.4 3.4L21.5 12' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafafc; --bg-2:#f2f3f7; --surface:#ffffff; --surface-2:#f6f7fb;
+  --border:rgba(15,23,42,.10); --border-strong:rgba(15,23,42,.18);
+  --text:#0d1020; --text-2:#475066; --muted:#737b90;
+  --accent:#e8590c; --accent-soft:rgba(232,89,12,.10); --accent-ink:#ffffff;
+  --violet:#6d5df5; --violet-soft:rgba(109,93,245,.10);
+  --good:#059669; --warn:#b45309; --bad:#dc2626;
+  --good-soft:rgba(5,150,105,.12); --warn-soft:rgba(180,83,9,.12); --bad-soft:rgba(220,38,38,.12);
+  --glow-a:rgba(255,122,69,.22); --glow-b:rgba(109,93,245,.16);
+  --grid:rgba(15,23,42,.05);
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 12px 32px -12px rgba(15,23,42,.18);
+  --term-bg:#0c0e14; --term-border:rgba(255,255,255,.08); --term-text:#e6e8ef; --term-muted:#7d8597;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a0b0f; --bg-2:#0f1117; --surface:#12151d; --surface-2:#181c26;
+    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
+    --text:#eef0f6; --text-2:#a9b0bf; --muted:#6f788b;
+    --accent:#ff7a45; --accent-soft:rgba(255,122,69,.12); --accent-ink:#1a0b03;
+    --violet:#9b8cff; --violet-soft:rgba(155,140,255,.12);
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --good-soft:rgba(52,211,153,.12); --warn-soft:rgba(251,191,36,.12); --bad-soft:rgba(248,113,113,.12);
+    --glow-a:rgba(255,122,69,.18); --glow-b:rgba(155,140,255,.14);
+    --grid:rgba(255,255,255,.035);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -16px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a0b0f; --bg-2:#0f1117; --surface:#12151d; --surface-2:#181c26;
+  --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
+  --text:#eef0f6; --text-2:#a9b0bf; --muted:#6f788b;
+  --accent:#ff7a45; --accent-soft:rgba(255,122,69,.12); --accent-ink:#1a0b03;
+  --violet:#9b8cff; --violet-soft:rgba(155,140,255,.12);
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+  --good-soft:rgba(52,211,153,.12); --warn-soft:rgba(251,191,36,.12); --bad-soft:rgba(248,113,113,.12);
+  --glow-a:rgba(255,122,69,.18); --glow-b:rgba(155,140,255,.14);
+  --grid:rgba(255,255,255,.035);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -16px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+code,pre,kbd,.mono{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+img,svg{display:block}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+@media (max-width:640px){.wrap{padding:0 16px}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid transparent;transition:border-color .2s}
+.nav.scrolled{border-bottom-color:var(--border)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.brand{white-space:nowrap;display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;letter-spacing:-.01em}
+.brand svg{width:26px;height:26px}
+.brand small{font:500 12px "Geist Mono",monospace;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 8px}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a{text-decoration:none;color:var(--text-2);font-size:14px;padding:8px 12px;border-radius:8px}
+.nav-links a:hover{color:var(--text);background:var(--surface-2)}
+.nav-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer}
+.icon-btn:hover{border-color:var(--border-strong)}
+.icon-btn svg{width:18px;height:18px}
+.theme-icon-dark{display:none}
+:root[data-theme="dark"] .theme-icon-dark{display:block} :root[data-theme="dark"] .theme-icon-light{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme-icon-dark{display:block}:root:not([data-theme="light"]) .theme-icon-light{display:none}}
+@media (max-width:860px){.nav-links{display:none}.nav-actions{margin-left:auto}}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:12px;font:600 15px "Geist",sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s;white-space:nowrap}
+.btn svg{width:18px;height:18px}
+.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 8px 24px -8px var(--accent)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px -8px var(--accent)}
+.btn-ghost{background:var(--surface);color:var(--text);border-color:var(--border)}
+.btn-ghost:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:72px 0 56px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);pointer-events:none}
+.hero::after{content:"";position:absolute;top:-220px;left:50%;width:1100px;height:620px;transform:translateX(-50%);background:radial-gradient(closest-side,var(--glow-a),transparent 70%),radial-gradient(closest-side at 75% 60%,var(--glow-b),transparent 70%);filter:blur(10px);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+.hero .wrap > *{min-width:0}
+@media (max-width:980px){.hero .wrap{grid-template-columns:minmax(0,1fr);gap:40px}.hero{padding-top:48px}}
+.pill{display:inline-flex;max-width:100%;line-height:1.35;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:13px;color:var(--text-2);text-decoration:none}
+.pill b{font:600 11px "Geist Mono",monospace;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:999px}
+h1{font-size:clamp(38px,5.6vw,64px);line-height:1.04;letter-spacing:-.035em;margin:20px 0 18px;font-weight:800}
+.grad{background:linear-gradient(100deg,var(--accent) 10%,#ff9f6e 45%,var(--violet) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(17px,1.6vw,19px);color:var(--text-2);max-width:560px;margin:0 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
+.install-line{display:flex;align-items:center;gap:10px;max-width:520px;padding:6px 6px 6px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow)}
+.install-line code{flex:1;min-width:0;font-size:13.5px;color:var(--text-2);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.install-line code::-webkit-scrollbar{display:none}
+.install-line code span{color:var(--accent)}
+.copy{flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);font:500 12px "Geist",sans-serif;cursor:pointer}
+.copy:hover{color:var(--text);border-color:var(--border-strong)}
+.copy svg{width:14px;height:14px}
+.copy.done{color:var(--good);border-color:var(--good)}
+.meta-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;color:var(--muted);font-size:13px}
+.meta-row span{display:inline-flex;align-items:center;gap:6px}
+.meta-row svg{width:15px;height:15px;color:var(--good)}
+
+/* ---------- terminal ---------- */
+.term{position:relative;border-radius:16px;background:var(--term-bg);border:1px solid var(--term-border);box-shadow:0 30px 80px -30px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.02) inset;color:var(--term-text);font:13px/1.65 "Geist Mono",monospace;overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--term-border);color:var(--term-muted);font-size:12px}
+.term-bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+.term-bar i:nth-child(2){background:#febc2e} .term-bar i:nth-child(3){background:#28c840}
+.term-bar span{margin-left:8px}
+.term-body{padding:16px 18px 18px;min-height:470px}
+.t-line{white-space:pre-wrap;word-break:break-word}
+.t-dim{color:var(--term-muted)} .t-acc{color:#ff9a6b} .t-vio{color:#b3a8ff} .t-good{color:#4ade80} .t-warn{color:#facc15} .t-bad{color:#f87171}
+.t-caret{display:inline-block;width:8px;height:15px;background:#ff9a6b;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.t-score{display:grid;grid-template-columns:minmax(0,1fr) 110px 40px;gap:10px;align-items:center;padding:2px 0}
+.t-score .bar{height:6px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+.t-score .bar b{display:block;height:100%;border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.t-score em{font-style:normal;text-align:right}
+.t-verdict{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0 6px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--term-border)}
+.tag{display:inline-flex;align-items:center;gap:6px;font:600 11px "Geist Mono",monospace;padding:3px 8px;border-radius:6px;letter-spacing:.02em}
+.tag-bad{background:rgba(248,113,113,.14);color:#f87171}
+.tag-good{background:rgba(74,222,128,.14);color:#4ade80}
+.t-hide{opacity:0;transform:translateY(4px);transition:opacity .35s,transform .35s}
+.t-show{opacity:1;transform:none}
+@media (max-width:520px){.term{font-size:11.5px}.t-score{grid-template-columns:minmax(0,1fr) 64px 32px}.term-body{min-height:440px;padding:14px}}
+
+/* ---------- strip ---------- */
+.strip{border-block:1px solid var(--border);background:var(--bg-2)}
+.strip .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 28px;padding-block:22px}
+.strip p{margin:0;color:var(--muted);font-size:13px;width:100%;text-align:center}
+.strip span{font:500 14px "Geist",sans-serif;color:var(--text-2);display:inline-flex;align-items:center;gap:8px}
+.strip span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.7}
+
+/* ---------- sections ---------- */
+section{padding:96px 0}
+@media (max-width:640px){section{padding:64px 0}}
+.eyebrow{font:600 12px "Geist Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h2{font-size:clamp(30px,3.8vw,44px);line-height:1.1;letter-spacing:-.03em;margin:0 0 16px;font-weight:750}
+.sub{color:var(--text-2);font-size:18px;max-width:640px;margin:0}
+.head{margin-bottom:48px}
+.head.center{text-align:center}.head.center .sub{margin-inline:auto}
+.alt{background:var(--bg-2);border-block:1px solid var(--border)}
+
+/* problem cards */
+.slips{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:980px){.slips{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.slips{grid-template-columns:1fr}}
+.slip{padding:22px;border-radius:16px;border:1px solid var(--border);background:var(--surface)}
+.slip .bad,.slip .ok{display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+.slip .bad{color:var(--text);margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--border)}
+.slip .ok{color:var(--text-2)}
+.slip svg{flex:none;width:18px;height:18px;margin-top:3px}
+.slip .bad svg{color:var(--bad)} .slip .ok svg{color:var(--good)}
+.slip code{font-size:12.5px;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px;border-radius:5px}
+
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.card{position:relative;padding:26px;border-radius:18px;border:1px solid var(--border);background:var(--surface);overflow:hidden;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--border-strong);transform:translateY(-2px)}
+.card h3{margin:14px 0 8px;font-size:18px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--text-2);font-size:14.5px}
+.ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.ic.v{background:var(--violet-soft);color:var(--violet)} .ic.g{background:var(--good-soft);color:var(--good)}
+.ic svg{width:20px;height:20px}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}
+@media (max-width:980px){.bento{grid-template-columns:repeat(2,1fr)}.c2,.c3,.c4{grid-column:span 1}.c-wide{grid-column:span 2}}
+@media (max-width:600px){.bento{grid-template-columns:1fr}.c-wide{grid-column:span 1}}
+.mini-scores{display:grid;gap:8px;margin-top:20px}
+.ms{display:grid;grid-template-columns:120px minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:13px;color:var(--text-2)}
+.ms .bar{height:8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden}
+.ms .bar b{display:block;height:100%;border-radius:999px}
+.ms em{font:600 12.5px "Geist Mono",monospace;font-style:normal;text-align:right;color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.chip{font:500 12px "Geist Mono",monospace;padding:4px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr auto 1fr;align-items:stretch;gap:14px}
+.pipe .arrow{display:grid;place-items:center;color:var(--muted)}
+.pipe .arrow svg{width:22px;height:22px}
+.stage{padding:20px;border-radius:16px;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.stage h4{margin:0;font-size:15px;display:flex;align-items:center;gap:8px}
+.stage p{margin:0;font-size:13.5px;color:var(--text-2)}
+.stage .num{font:600 11px "Geist Mono",monospace;color:var(--muted)}
+.agents{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.agent{font:500 12px "Geist Mono",monospace;padding:7px 9px;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2);display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--violet);animation:pulse 2.4s ease-in-out infinite}
+.agent:nth-child(2n)::before{animation-delay:.6s}.agent:nth-child(3n)::before{animation-delay:1.2s}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.agent::before{animation:none}.t-caret{animation:none}}
+.verdicts{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.v-chip{font:600 11px "Geist Mono",monospace;padding:3px 8px;border-radius:6px}
+.v-ok{background:var(--good-soft);color:var(--good)} .v-mid{background:var(--warn-soft);color:var(--warn)} .v-no{background:var(--bad-soft);color:var(--bad)}
+@media (max-width:980px){.pipe{grid-template-columns:1fr}.pipe .arrow{transform:rotate(90deg);height:22px}}
+
+/* scoring */
+.score-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:24px}
+@media (max-width:900px){.score-grid{grid-template-columns:1fr}}
+.panel{border-radius:18px;border:1px solid var(--border);background:var(--surface);padding:26px}
+.panel h3{margin:0 0 16px;font-size:17px}
+.rules{display:grid;gap:14px}
+.rule{display:grid;grid-template-columns:96px 1fr;gap:14px;font-size:14.5px;color:var(--text-2);padding-bottom:14px;border-bottom:1px solid var(--border)}
+.rule:last-child{border-bottom:0;padding-bottom:0}
+.rule b{color:var(--text);font-weight:600}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.cats{grid-template-columns:1fr}}
+.cat{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);font-size:14px}
+.cat code{font-size:11.5px;color:var(--muted)}
+.cat .w{font:600 11.5px "Geist Mono",monospace;padding:2px 7px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:var(--text-2)}
+.cat .w.hi{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.cat span:first-child{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+
+/* commands */
+.cmd-wrap{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px}
+.cmd-wrap > *{min-width:0}
+@media (max-width:900px){.cmd-wrap{grid-template-columns:minmax(0,1fr)}}
+.tabs{display:flex;flex-direction:column;gap:4px}
+@media (max-width:900px){.tabs{flex-direction:row;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}}
+.tab{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:11px;font:500 14px "Geist Mono",monospace;color:var(--text-2);border:1px solid transparent;white-space:nowrap}
+.tab:hover{background:var(--surface);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--text);border-color:var(--border);box-shadow:var(--shadow)}
+.tab[aria-selected="true"] .dot{background:var(--accent)}
+.tab .dot{width:7px;height:7px;border-radius:50%;background:var(--border-strong)}
+.tab:focus-visible{outline:2px solid var(--accent)}
+.cmd{border-radius:18px;border:1px solid var(--border);background:var(--surface);padding:28px;min-height:420px}
+.cmd[hidden]{display:none}
+.cmd h3{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
+.cmd .tagline{color:var(--text-2);margin:0 0 18px}
+.usage{position:relative;margin:0 0 20px;padding:14px 16px;border-radius:12px;background:var(--term-bg);color:var(--term-text);font-size:13px;line-height:1.6;overflow-x:auto;border:1px solid var(--term-border)}
+.usage .t-acc{color:#ff9a6b}
+.cmd ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.cmd li{display:flex;gap:10px;color:var(--text-2);font-size:15px}
+.cmd li svg{flex:none;width:18px;height:18px;margin-top:3px;color:var(--accent)}
+.cmd li code,.faq code,.panel code,.sub code{font-size:.88em;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px;border-radius:5px}
+.writes{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:13px;color:var(--muted)}
+.writes b{font-weight:600;color:var(--text-2)}
+
+/* fix report */
+.split > *{min-width:0}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:center}
+@media (max-width:900px){.split{grid-template-columns:minmax(0,1fr);gap:32px}}
+.steps{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:16px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:14px;color:var(--text-2);font-size:15px}
+.steps li::before{counter-increment:s;content:counter(s);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:600 13px "Geist Mono",monospace;background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.steps b{color:var(--text)}
+.report{border-radius:18px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.report-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);font-weight:600;flex-wrap:wrap}
+.report-head small{font:500 12px "Geist Mono",monospace;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+th{font:600 11.5px "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--surface-2)}
+td.num{font-family:"Geist Mono",monospace}
+.delta{color:var(--good);font:600 13px "Geist Mono",monospace}
+.gates{display:flex;flex-wrap:wrap;gap:8px;padding:16px 20px}
+.gate{display:inline-flex;align-items:center;gap:6px;font:500 12.5px "Geist Mono",monospace;padding:5px 10px;border-radius:8px;background:var(--good-soft);color:var(--good)}
+.gate.info{background:var(--warn-soft);color:var(--warn)}
+.gate svg{width:13px;height:13px}
+
+/* guard */
+.code{border-radius:16px;background:var(--term-bg);border:1px solid var(--term-border);overflow:hidden;box-shadow:var(--shadow)}
+.code pre{margin:0;padding:18px 20px;color:var(--term-text);font-size:13px;line-height:1.7;overflow-x:auto}
+.code .k{color:#c4b5fd}.code .s{color:#86efac}.code .c{color:#6b7280}.code .f{color:#93c5fd}
+.code .hl{display:inline-block;width:100%;background:rgba(248,113,113,.10);box-shadow:inset 3px 0 0 #f87171}
+.warn-box{margin:0 16px 16px;padding:14px 16px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28);color:#fde68a;font:13px/1.6 "Geist Mono",monospace}
+.warn-box b{color:#fbbf24}
+.catch{display:grid;gap:8px;margin-top:24px}
+.catch div{min-width:0;overflow-wrap:anywhere;display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:14px;color:var(--text-2)}
+.sev{font:600 11px "Geist Mono",monospace;padding:2px 7px;border-radius:6px;flex:none;align-self:center}
+.sev.p0{background:var(--bad-soft);color:var(--bad)}.sev.p1{background:var(--warn-soft);color:var(--warn)}.sev.p2{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+
+/* compare */
+.compare th:not(:first-child),.compare td:not(:first-child){text-align:center}
+.compare td{white-space:normal}
+.compare td:first-child{min-width:220px;color:var(--text)}
+.compare th:last-child,.compare td:last-child{background:var(--accent-soft)}
+.compare th:last-child{color:var(--accent)}
+.y{color:var(--good);font-weight:700}.n{color:var(--muted)}.p{color:var(--warn)}
+.compare .tbl-wrap table{min-width:620px}
+
+/* workflows */
+.flows{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:980px){.flows{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.flows{grid-template-columns:1fr}}
+.flow{padding:22px;border-radius:16px;border:1px solid var(--border);background:var(--surface)}
+.flow h3{margin:0 0 4px;font-size:16px}
+.flow p{margin:0 0 16px;color:var(--muted);font-size:13.5px}
+.flow ol{list-style:none;margin:0;padding:0;display:grid;gap:8px;position:relative}
+.flow li{font:500 12.5px "Geist Mono",monospace;padding:8px 10px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);overflow-wrap:anywhere}
+.flow li span{display:block;font:400 12px "Geist",sans-serif;color:var(--muted);margin-top:2px}
+
+/* install */
+.install{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.install > *{min-width:0}
+@media (max-width:900px){.install{grid-template-columns:minmax(0,1fr)}}
+.istep{padding:24px;border-radius:18px;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:12px}
+.istep .n{font:600 12px "Geist Mono",monospace;color:var(--accent)}
+.istep h3{margin:0;font-size:18px}
+.istep p{margin:0;color:var(--text-2);font-size:14.5px}
+.snippet{margin-top:auto;border-radius:12px;background:var(--term-bg);border:1px solid var(--term-border);color:var(--term-text);overflow:hidden}
+.snippet-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 6px 6px 14px;border-bottom:1px solid var(--term-border);font:500 11.5px "Geist Mono",monospace;color:var(--term-muted)}
+.snippet pre{margin:0;padding:12px 14px;font:12.5px/1.75 "Geist Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.nw{white-space:nowrap}
+.snippet .copy{height:28px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#b8bdca}
+.snippet .copy:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+.snippet .copy.done{color:#4ade80;border-color:#4ade80}
+.req{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px}
+.req span{font-size:13px;color:var(--text-2);padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface)}
+.req b{color:var(--text);font-weight:600}
+
+/* safety */
+.safety{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:900px){.safety{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.safety{grid-template-columns:1fr}}
+.safe{padding:22px;border-radius:16px;border:1px solid var(--border);background:var(--surface)}
+.safe h3{margin:12px 0 6px;font-size:16px}
+.safe p{margin:0;color:var(--text-2);font-size:14px}
+
+/* faq */
+.faq{max-width:820px;margin:0 auto;display:grid;gap:10px}
+.faq details{border-radius:14px;border:1px solid var(--border);background:var(--surface);padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 22px "Geist Mono",monospace;color:var(--muted);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:0 0 18px;color:var(--text-2);font-size:15px}
+
+/* final cta */
+.final{position:relative;overflow:hidden;border-radius:24px;border:1px solid var(--border);background:var(--surface);padding:64px 32px;text-align:center}
+.final::before{content:"";position:absolute;inset:-40% -10% auto;height:120%;background:radial-gradient(closest-side,var(--glow-a),transparent 70%),radial-gradient(closest-side at 70% 60%,var(--glow-b),transparent 70%);pointer-events:none}
+.final > *{position:relative}
+.final .cta{justify-content:center;margin:28px 0 0}
+@media (max-width:560px){.final{padding:44px 20px}}
+
+footer{border-top:1px solid var(--border);padding:32px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center}
+footer nav{display:flex;flex-wrap:wrap;gap:18px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--text)}
+.foot-me{display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--text-2)}
+.foot-me > span > a{color:var(--text);font-weight:600;text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
+.socials{display:flex;gap:8px}
+.socials .icon-btn{width:36px;height:36px;color:var(--text-2)}
+.socials .icon-btn:hover{color:var(--accent)}
+.foot-legal{width:100%;font-size:12.5px;color:var(--muted);padding-top:16px;border-top:1px solid var(--border)}
+
+/* reveal */
+html.js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+html.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){html.js .reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6L12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m8.8 12 2.2 2.2 4.3-4.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="expo-es-kit home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 4 6.5v8.7C4 22.6 9.1 28.4 16 30c6.9-1.6 12-7.4 12-14.8V6.5L16 2Z" fill="var(--accent)"/><path d="m11 16.2 3.4 3.4L21.5 12" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      expo-es-kit <small>v0.2.0</small>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#commands">Commands</a>
+      <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="theme" type="button" aria-label="Toggle color theme">
+        <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <a class="icon-btn" href="https://github.com/eusebiu-soica/expo-es-kit" aria-label="expo-es-kit on GitHub"><svg aria-hidden="true"><use href="#i-gh"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <a class="pill" href="https://github.com/eusebiu-soica/expo-es-kit/blob/main/CHANGELOG.md"><b>NEW</b> v0.2.0 · store privacy forms, SDK upgrades, audit history</a>
+      <h1>Ship Expo apps that are <span class="grad">fast, secure and <span style="white-space:nowrap">store-ready.</span></span></h1>
+      <p class="lead">A Claude Code plugin that audits your Expo &amp; React Native app with a team of specialist agents, scores it 0–10 across 13 categories, fixes what it finds and proves the fixes work.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#install">Get started <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-gh"/></svg> Star on GitHub</a>
+      </div>
+      <div class="install-line">
+        <code><span>/plugin</span> marketplace add eusebiu-soica/expo-es-kit</code>
+        <button class="copy" type="button" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button>
+      </div>
+      <div class="meta-row">
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>MIT licensed</span>
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>Zero-dependency local scanner</span>
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>Never prints your secrets</span>
+      </div>
+    </div>
+
+    <div class="term" role="img" aria-label="Terminal showing a deep audit: overall score 6.8 out of 10, verdict NO-GO, blocked by REL-001 account deletion placeholder.">
+      <div class="term-bar"><i></i><i></i><i></i><span>~/my-app — claude</span></div>
+      <div class="term-body" id="term">
+        <div class="t-line"><span class="t-acc">&gt;</span> /expo-es-kit:audit --deep --api=../my-api</div>
+        <div class="t-line t-hide"><span class="t-good">●</span> scan.mjs <span class="t-dim">· 1,284 files · 122 rules · 2.1s</span></div>
+        <div class="t-line t-hide"><span class="t-vio">●</span> 8 specialist auditors running in parallel<span class="t-dim">…</span></div>
+        <div class="t-line t-hide"><span class="t-vio">●</span> finding-verifier <span class="t-dim">· 14 ok · 3 down · 5 rejected</span></div>
+        <div class="t-verdict t-hide">
+          <span><b style="font-size:15px">6.8</b><span class="t-dim">/10</span></span>
+          <span class="tag tag-bad">■ NO-GO</span>
+          <span class="t-good">▲ +0.9</span><span class="t-dim">vs 2026-09-01</span>
+        </div>
+        <div id="term-scores">
+          <div class="t-score t-hide"><span>Performance</span><span class="bar"><b data-w="75" style="background:#facc15"></b></span><em class="t-warn">7.5</em></div>
+          <div class="t-score t-hide"><span>Startup speed</span><span class="bar"><b data-w="70" style="background:#facc15"></b></span><em class="t-warn">7.0</em></div>
+          <div class="t-score t-hide"><span>Caching</span><span class="bar"><b data-w="80" style="background:#4ade80"></b></span><em class="t-good">8.0</em></div>
+          <div class="t-score t-hide"><span>MMKV</span><span class="bar"><b data-w="85" style="background:#4ade80"></b></span><em class="t-good">8.5</em></div>
+          <div class="t-score t-hide"><span>Secure storage</span><span class="bar"><b data-w="90" style="background:#4ade80"></b></span><em class="t-good">9.0</em></div>
+          <div class="t-score t-hide"><span>Auth &amp; sessions</span><span class="bar"><b data-w="70" style="background:#facc15"></b></span><em class="t-warn">7.0</em></div>
+          <div class="t-score t-hide"><span>Backend security</span><span class="bar"><b data-w="80" style="background:#4ade80"></b></span><em class="t-good">8.0</em></div>
+          <div class="t-score t-hide"><span>Updates</span><span class="bar"><b data-w="45" style="background:#f87171"></b></span><em class="t-bad">4.5</em></div>
+          <div class="t-score t-hide"><span>Release readiness</span><span class="bar"><b data-w="30" style="background:#f87171"></b></span><em class="t-bad">3.0</em></div>
+        </div>
+        <div class="t-line t-hide" style="margin-top:10px"><span class="t-bad">P0</span> REL-001 <span class="t-dim">account deletion is a placeholder</span></div>
+        <div class="t-line t-hide"><span class="t-warn">P1</span> AUTH-001 <span class="t-dim">callback accepts raw tokens from the URL</span></div>
+        <div class="t-line t-hide"><span class="t-dim">Saved docs/audits/expo-audit-2026-10-07.md</span> <span class="t-caret"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <p>Built for the stack you already use</p>
+    <span>Expo SDK 54+</span><span>React Native 0.81+</span><span>expo-router</span><span>Supabase</span><span>Next.js on Vercel</span><span>MMKV</span><span>TanStack Query</span><span>HeroUI Native</span>
+  </div>
+</div>
+
+<!-- ================= PROBLEM ================= -->
+<section>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">The problem</p>
+      <h2>Agents write code fast.<br>They forget the rules that matter.</h2>
+      <p class="sub">The slips that make a mobile app slow or unsafe are rarely in the happy path. expo-es-kit gives Claude Code those rules, and checks that they are followed.</p>
+    </div>
+    <div class="slips">
+      <div class="slip reveal">
+        <div class="bad"><svg aria-hidden="true"><use href="#i-x"/></svg><span>A session token ends up in <code>AsyncStorage</code></span></div>
+        <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg><span>Tokens in SecureStore, everything else in encrypted MMKV</span></div>
+      </div>
+      <div class="slip reveal">
+        <div class="bad"><svg aria-hidden="true"><use href="#i-x"/></svg><span>2,000 rows rendered inside a <code>ScrollView</code></span></div>
+        <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg><span>Virtualized lists, memoized rows, measured on min-spec Android</span></div>
+      </div>
+      <div class="slip reveal">
+        <div class="bad"><svg aria-hidden="true"><use href="#i-x"/></svg><span>A full-size photo decoded for a 60&nbsp;px thumbnail</span></div>
+        <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg><span>Transformed thumbnails, <code>expo-image</code> with a disk cache</span></div>
+      </div>
+      <div class="slip reveal">
+        <div class="bad"><svg aria-hidden="true"><use href="#i-x"/></svg><span>Sign-out leaves the last user's data in the cache</span></div>
+        <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg><span>Server-side revoke plus a full wipe of queries, MMKV and images</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="alt" id="features">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow">Features</p>
+      <h2>Everything between “it runs” and “it ships”</h2>
+      <p class="sub">Nine skills, nine agents and a real-time guard, all working from one shared scoring contract.</p>
+    </div>
+    <div class="bento">
+      <article class="card c4 c-wide reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+        <h3>Scored audits with a verdict</h3>
+        <p>13 categories (14 with HeroUI Native), each scored 0–10 with <code>file:line</code> evidence for every finding, a GO / NO-GO verdict and a trend against your last audit.</p>
+        <div class="mini-scores" aria-hidden="true">
+          <div class="ms"><span>Secure storage</span><span class="bar"><b style="width:90%;background:var(--good)"></b></span><em>9.0</em></div>
+          <div class="ms"><span>Auth &amp; sessions</span><span class="bar"><b style="width:70%;background:var(--warn)"></b></span><em>7.0</em></div>
+          <div class="ms"><span>Release</span><span class="bar"><b style="width:30%;background:var(--bad)"></b></span><em>3.0</em></div>
+        </div>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic v"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 19c0-3 2.2-5 5-5s5 2 5 5m-1.5-4.6A5 5 0 0 1 16 14c2.8 0 5 2 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>Deep multi-agent mode</h3>
+        <p>8 specialist auditors run in parallel. An adversarial verifier then tries to disprove every serious finding.</p>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Fixes that prove themselves</h3>
+        <p>Every fix run ends with gates, an independent re-check per finding, a regression scan and a before/after table.</p>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h6l2 2h8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 14h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>Agent rules per folder</h3>
+        <p>Short <code>CLAUDE.md</code> files for components, lib, storage, routes, migrations… and detection of stale rules you already have.</p>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic v"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <h3>Backend &amp; sessions included</h3>
+        <p>Supabase direct-DB (RLS, policies, definer functions) or your own API on Next.js, Supabase Edge Functions or Expo API Routes.</p>
+      </article>
+      <article class="card c3 reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m3 13 9 5 9-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <h3>A proven foundation</h3>
+        <p>Encrypted MMKV, a SecureStore session adapter, an API client with single-flight refresh, per-family query snapshots, a complete sign-out wipe and env validation, adapted to your app.</p>
+        <div class="chips"><span class="chip">app-storage</span><span class="chip">api-client</span><span class="chip">query-client</span><span class="chip">sign-out</span><span class="chip">env</span><span class="chip">error-boundary</span></div>
+      </article>
+      <article class="card c3 reveal">
+        <div class="ic g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM8 7V4h8v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>Store privacy forms from evidence</h3>
+        <p>Draft answers for App Store App Privacy and Google Play Data safety, plus a privacy manifest check, built from your SDKs, permissions, code and database schema.</p>
+        <div class="chips"><span class="chip">35+ SDKs</span><span class="chip">permissions</span><span class="chip">DB schema</span><span class="chip">required-reason APIs</span></div>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Safe SDK upgrades</h3>
+        <p>One major at a time, with gates and a device smoke test after every step.</p>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic v"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 9 11l4 4 8-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7h6v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Audit history &amp; badge</h3>
+        <p>An offline HTML dashboard of scores over time, and a score badge for your README.</p>
+      </article>
+      <article class="card c2 reveal">
+        <div class="ic g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6c0 4.5-2 6-2 6h16s-2-1.5-2-6a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <h3>Real-time guard &amp; HeroUI</h3>
+        <p>A warn-only hook flags dangerous code as soon as it is written. HeroUI Native gets its own audit for imports, sheets, tokens and animations.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW ================= -->
+<section id="how">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">How deep mode works</p>
+      <h2>Signals, specialists, then a skeptic</h2>
+      <p class="sub">A scan hit is a signal, not a finding. Every finding needs code an agent actually read, and every serious one has to survive a verifier whose only job is to disprove it.</p>
+    </div>
+    <div class="pipe reveal">
+      <div class="stage">
+        <span class="num">01 · LOCAL</span>
+        <h4>scan.mjs</h4>
+        <p>Zero-dependency static scan: stack, config, env key names (never values), migrations and RLS, API routes, 120+ rules with <code>file:line</code>.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></div>
+      <div class="stage">
+        <span class="num">02 · PARALLEL</span>
+        <h4>8 specialist auditors</h4>
+        <div class="agents">
+          <span class="agent">perf</span><span class="agent">bundle-deps</span>
+          <span class="agent">storage-cache</span><span class="agent">client-security</span>
+          <span class="agent">auth-session</span><span class="agent">backend</span>
+          <span class="agent">release</span><span class="agent">heroui</span>
+        </div>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></div>
+      <div class="stage">
+        <span class="num">03 · ADVERSARIAL</span>
+        <h4>finding-verifier</h4>
+        <p>Re-reads the code behind every P0/P1 and looks for wrappers, middleware or later migrations that mitigate it.</p>
+        <div class="verdicts"><span class="v-chip v-ok">confirmed</span><span class="v-chip v-mid">downgraded</span><span class="v-chip v-no">rejected</span></div>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></div>
+      <div class="stage">
+        <span class="num">04 · REPORT</span>
+        <h4>Score &amp; verdict</h4>
+        <p>Weighted overall score, trend ▲▼ vs the last run, Top 10 fixes, and “what was not checked”. Saved as Markdown + JSON.</p>
+        <div class="verdicts"><span class="v-chip v-ok">GO</span><span class="v-chip v-mid">GO WITH RISKS</span><span class="v-chip v-no">NO-GO</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCORING ================= -->
+<section class="alt" id="scoring">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Scoring</p>
+      <h2>One contract, every skill</h2>
+      <p class="sub">The same IDs, severities, caps and JSON shapes across audit, fix, backend and history. That is what makes trends and verified fixes possible.</p>
+    </div>
+    <div class="score-grid">
+      <div class="panel reveal">
+        <h3>Rules</h3>
+        <div class="rules">
+          <div class="rule"><b>Severity</b><span><b>P0</b> exploitable hole, data leak, crash on start or store rejection. <b>P1</b> significant issue. <b>P2</b> hygiene.</span></div>
+          <div class="rule"><b>Caps</b><span>A confirmed P0 caps its category at <b>4</b>. A confirmed P1 caps it at <b>7</b>.</span></div>
+          <div class="rule"><b>Overall</b><span>Weighted average. Security categories count <b>1.5×</b>.</span></div>
+          <div class="rule"><b>Verdict</b><span><span class="v-chip v-no">NO-GO</span> any confirmed P0 · <span class="v-chip v-mid">GO WITH RISKS</span> a security P1 or overall below 7 · <span class="v-chip v-ok">GO</span> otherwise</span></div>
+        </div>
+      </div>
+      <div class="panel reveal">
+        <h3>Categories</h3>
+        <div class="cats">
+          <div class="cat"><span>Performance<code>perf</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Startup speed<code>startup</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Bundle size<code>bundle</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Caching<code>caching</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>MMKV<code>mmkv</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Secure storage<code>secure-storage</code></span><span class="w hi">1.5</span></div>
+          <div class="cat"><span>Client security<code>client-security</code></span><span class="w hi">1.5</span></div>
+          <div class="cat"><span>Auth &amp; sessions<code>auth-sessions</code></span><span class="w hi">1.5</span></div>
+          <div class="cat"><span>Backend security<code>backend</code></span><span class="w hi">1.5</span></div>
+          <div class="cat"><span>Dependencies<code>deps</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Updates<code>updates</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Release readiness<code>release</code></span><span class="w">1.0</span></div>
+          <div class="cat"><span>Agent instructions<code>agent-config</code></span><span class="w">0.5</span></div>
+          <div class="cat"><span>HeroUI Native<code>heroui · if installed</code></span><span class="w">1.0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMMANDS ================= -->
+<section id="commands">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Commands</p>
+      <h2>Nine skills. Ask in plain words or by name.</h2>
+      <p class="sub">“Audit my app before release”, “is my API secure?”, “set up CLAUDE.md files” all work. Every command that writes shows a plan and diffs first, and never overwrites your files.</p>
+    </div>
+    <div class="cmd-wrap reveal">
+      <div class="tabs" role="tablist" aria-label="Commands">
+        <button class="tab" role="tab" id="t-audit" aria-controls="p-audit" aria-selected="true"><span class="dot"></span>audit</button>
+        <button class="tab" role="tab" id="t-fix" aria-controls="p-fix" aria-selected="false" tabindex="-1"><span class="dot"></span>fix</button>
+        <button class="tab" role="tab" id="t-setup" aria-controls="p-setup" aria-selected="false" tabindex="-1"><span class="dot"></span>setup</button>
+        <button class="tab" role="tab" id="t-backend" aria-controls="p-backend" aria-selected="false" tabindex="-1"><span class="dot"></span>backend</button>
+        <button class="tab" role="tab" id="t-foundation" aria-controls="p-foundation" aria-selected="false" tabindex="-1"><span class="dot"></span>foundation</button>
+        <button class="tab" role="tab" id="t-heroui" aria-controls="p-heroui" aria-selected="false" tabindex="-1"><span class="dot"></span>heroui</button>
+        <button class="tab" role="tab" id="t-privacy" aria-controls="p-privacy" aria-selected="false" tabindex="-1"><span class="dot"></span>privacy</button>
+        <button class="tab" role="tab" id="t-upgrade" aria-controls="p-upgrade" aria-selected="false" tabindex="-1"><span class="dot"></span>upgrade</button>
+        <button class="tab" role="tab" id="t-history" aria-controls="p-history" aria-selected="false" tabindex="-1"><span class="dot"></span>history</button>
+      </div>
+
+      <div>
+        <div class="cmd" role="tabpanel" id="p-audit" aria-labelledby="t-audit">
+          <h3>Audit</h3>
+          <p class="tagline">Scored production-readiness audit. Read-only.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:audit</span> [appPath] [--quick | --deep] [--api=&lt;apiRepoPath&gt;] [--only=&lt;ids&gt;]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Quick</b>: one agent, a static scan and targeted reads. About 5–15 minutes. Good for weekly checks.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Deep</b>: 8 specialists in parallel, then a verifier. Use it before releases.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><code>--api=../my-api</code> also audits a separate backend repo, e.g. a Next.js project on Vercel.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Saves <code>docs/audits/expo-audit-YYYY-MM-DD.md</code> + <code>.json</code>. The report follows your language.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>never, report only</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-fix" aria-labelledby="t-fix" hidden>
+          <h3>Fix</h3>
+          <p class="tagline">Apply findings by priority, then verify everything.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:fix</span> [report.json] [--only=P0 | P0,P1 | AUTH-001 | auth-sessions]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Baseline gates first, so it knows which failures already existed.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Batches (P0 first) with files, risk and rebuild needs. You confirm each batch.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Never disables lint rules, adds <code>@ts-ignore</code>, loosens RLS or widens CORS.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Mandatory final verification: gates, verifier per finding, regression scan, re-audit, before/after table.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>yes, after confirmation</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-setup" aria-labelledby="t-setup" hidden>
+          <h3>Setup</h3>
+          <p class="tagline">Per-folder <code>CLAUDE.md</code> rules that agents load automatically.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:setup</span> [appPath] [--mode=direct-db | api | hybrid] [--api=&lt;path&gt;] [--dry-run]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Four short sections per file: <b>Use</b>, <b>Never</b>, <b>Patterns</b>, <b>Before finishing</b>.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Data-layer rules adapt to your backend mode: RLS as the boundary, or a single API client.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Flags stale claims your code contradicts, and references existing <code>.claude/rules</code> instead of duplicating them.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Only manages its own <code>&lt;!-- expo-es-kit --&gt;</code> section. <code>--dry-run</code> writes nothing.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>yes, after confirmation</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-backend" aria-labelledby="t-backend" hidden>
+          <h3>Backend</h3>
+          <p class="tagline">Design, audit or implement the backend securely, with auth and sessions end to end.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:backend</span> [design | audit | implement] [--api=&lt;path&gt;] [--framework=nextjs | supabase-edge | expo-api-routes]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>direct-db</b>, <b>api</b> or <b>hybrid</b>: detected automatically, each with its own trust boundary.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>RLS per operation, <code>(select auth.uid())</code>, definer <code>search_path</code>, storage policies.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Server-side JWT verification, per-resource authorization (IDOR), zod, rate limits, generic errors, OWASP API Top 10.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>PKCE, single-flight refresh, session-generation guard, revoke + local wipe, account deletion.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b><code>implement</code> only</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-foundation" aria-labelledby="t-foundation" hidden>
+          <h3>Foundation</h3>
+          <p class="tagline">Scaffold the core production modules, only where they are missing.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:foundation</span> [appPath] [--mode=direct-db | api | hybrid] [--only=storage,query,auth,api,env,errors]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Encrypted MMKV with its key in SecureStore, a canary for recovery and a bounded init.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Supabase or API client with timeouts and 401 → single-flight refresh → retry once.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Query defaults with per-family snapshots instead of whole-cache persistence.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Gap analysis first: existing modules get small <i>extend</i> diffs, never replacements.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>yes, after confirmation</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-heroui" aria-labelledby="t-heroui" hidden>
+          <h3>HeroUI Native</h3>
+          <p class="tagline">Performance, tokens, animations and accessibility for <code>heroui-native</code> apps.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:heroui</span> [audit | setup] [appPath]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Granular imports, a single sheet host, skeleton bypass after load, overdraw from translucent colors.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Token-adoption percentage for colors, typography, spacing and radius; dark/light parity.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Reanimated v4 compatibility, reduced motion, no mount animations during transitions.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><code>setup</code> adds UI-folder rules, an import rule and optional <code>SheetHost</code> / <code>LoadingSkeleton</code>.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b><code>setup</code> only</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-privacy" aria-labelledby="t-privacy" hidden>
+          <h3>Privacy</h3>
+          <p class="tagline">Store privacy answers built from evidence, not guesses.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:privacy</span> [appPath] [--api=&lt;apiRepoPath&gt;] [--out=&lt;dir&gt;]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>App Store App Privacy answers in App Store Connect order, plus the final label.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Google Play Data safety: collected vs shared, encryption in transit, deletion.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Proposed <code>ios.privacyManifests</code> with required-reason APIs.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Rejection risks (usage strings, tracking without ATT, no account deletion) and the questions only you can answer.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b><code>docs/store/</code> only, after confirmation</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-upgrade" aria-labelledby="t-upgrade" hidden>
+          <h3>Upgrade</h3>
+          <p class="tagline">Expo SDK upgrades, one verified major at a time.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:upgrade</span> [appPath] [--to=&lt;sdk&gt;] [--plan-only]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>A plan per major from the official release notes, grep hits in your code and library compatibility.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Patches re-validated, OTA and <code>runtimeVersion</code> safety checked.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Gates plus a device smoke test you confirm before the next step.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Uses the official Expo upgrade skill when it is installed. Install commands are printed for you to run.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>yes, after confirmation</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-history" aria-labelledby="t-history" hidden>
+          <h3>History</h3>
+          <p class="tagline">Your scores over time, and a badge for the README.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:history</span> [appPath]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>A self-contained <code>history.html</code>: overall trend, per-category panels, open P0/P1/P2 per audit.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Works offline, in light and dark mode, and on mobile.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><code>badge.svg</code> for private repos, <code>badge.json</code> as a shields.io endpoint for public ones.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b><code>docs/audits/</code> only</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FIX ================= -->
+<section class="alt">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="eyebrow">Verified fixes</p>
+      <h2>“Done” means verified.</h2>
+      <p class="sub">The fix skill never reports “all fixed” unless every finding is confirmed by an independent verifier and every gate is green. Gates it could not run are reported as “not run”, never as passed.</p>
+      <ol class="steps">
+        <li><span><b>Baseline.</b> Fresh scan and gates before touching anything.</span></li>
+        <li><span><b>Apply.</b> Minimal diffs in batches you confirm, P0 first.</span></li>
+        <li><span><b>Verify.</b> Gates, verifier per finding, regression scan, re-audit.</span></li>
+        <li><span><b>Report.</b> Before/after scores and the new verdict.</span></li>
+      </ol>
+    </div>
+    <div class="report reveal" aria-label="Example fix report">
+      <div class="report-head">Fix report <small>docs/audits/expo-fix-2026-10-07.md</small></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Δ</th><th>Fixed</th><th>Open</th></tr></thead>
+          <tbody>
+            <tr><td>Auth &amp; sessions</td><td class="num">7.0</td><td class="num">9.0</td><td class="delta">+2.0</td><td class="num">2</td><td class="num">0</td></tr>
+            <tr><td>Release</td><td class="num">3.0</td><td class="num">7.5</td><td class="delta">+4.5</td><td class="num">2</td><td class="num">1</td></tr>
+            <tr><td>Client security</td><td class="num">6.5</td><td class="num">8.5</td><td class="delta">+2.0</td><td class="num">3</td><td class="num">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="gates">
+        <span class="gate"><svg aria-hidden="true"><use href="#i-check"/></svg>typecheck</span>
+        <span class="gate"><svg aria-hidden="true"><use href="#i-check"/></svg>lint</span>
+        <span class="gate"><svg aria-hidden="true"><use href="#i-check"/></svg>tests 142/142</span>
+        <span class="gate"><svg aria-hidden="true"><use href="#i-check"/></svg>expo-doctor</span>
+        <span class="gate info">rebuild required</span>
+        <span class="gate info">GO WITH RISKS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUARD ================= -->
+<section>
+  <div class="wrap split">
+    <div class="code reveal" aria-label="Example guard hook warning">
+      <div class="term-bar"><i></i><i></i><i></i><span>lib/auth/session.ts</span></div>
+<pre><span class="k">import</span> AsyncStorage <span class="k">from</span> <span class="s">'@react-native-async-storage/async-storage'</span>;
+
+<span class="k">export async function</span> <span class="f">saveSession</span>(session) {
+<span class="hl">  <span class="k">await</span> AsyncStorage.<span class="f">setItem</span>(<span class="s">'access_token'</span>, session.access_token);</span>
+}</pre>
+      <div class="warn-box"><b>⚠ expo-es-kit guard · P0</b><br>Token written to AsyncStorage (unencrypted). Store session tokens in expo-secure-store.</div>
+    </div>
+    <div class="reveal">
+      <p class="eyebrow">Guard hook</p>
+      <h2>Caught while it's being written.</h2>
+      <p class="sub">After every <code>Write</code> or <code>Edit</code> in an Expo project, a fast local check scans only the text just written. The agent gets a warning and corrects itself. It never blocks an edit.</p>
+      <div class="catch">
+        <div>Tokens or passwords in AsyncStorage<span class="sev p0">P0</span></div>
+        <div><code>service_role</code> or secret-looking <code>EXPO_PUBLIC_*</code><span class="sev p0">P0</span></div>
+        <div>Hard-coded Stripe, AWS, GitHub or Supabase secrets<span class="sev p0">P0</span></div>
+        <div>Tokens in logs or URLs, cleartext <code>http://</code><span class="sev p1">P1</span></div>
+        <div>Whole-cache persistence, full <code>lodash</code>, RN <code>Image</code> for remote<span class="sev p2">P2</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section class="alt compare">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow">Compared</p>
+      <h2>Complements the official skills</h2>
+      <p class="sub">The official <code>expo/skills</code> teach how to use Expo APIs. expo-es-kit checks that the result is production-ready.</p>
+    </div>
+    <div class="report reveal">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>expo/skills</th><th>RN review skills</th><th>expo-es-kit</th></tr></thead>
+          <tbody>
+            <tr><td>How to use Expo APIs</td><td class="y">✓</td><td class="n">–</td><td class="n">complements</td></tr>
+            <tr><td>Scored audit + verdict</td><td class="n">✕</td><td class="p">checklist</td><td class="y">✓</td></tr>
+            <tr><td>Verification pass against false positives</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Trend across audits</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>MMKV, secure storage, sessions</td><td class="n">✕</td><td class="p">partial</td><td class="y">✓</td></tr>
+            <tr><td>Backend: RLS and API security</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Applies fixes and re-verifies</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Per-folder agent rules</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Store privacy forms from code evidence</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>SDK upgrade with gates per step</td><td class="y">✓</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Score history + badge</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WORKFLOWS ================= -->
+<section>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Workflows</p>
+      <h2>From the first commit to every release</h2>
+    </div>
+    <div class="flows">
+      <div class="flow reveal">
+        <h3>New app</h3><p>Start with the right structure.</p>
+        <ol>
+          <li>/expo-es-kit:backend design<span>pick direct-db, api or hybrid</span></li>
+          <li>/expo-es-kit:foundation<span>core modules</span></li>
+          <li>/expo-es-kit:setup<span>agent rules for every folder</span></li>
+        </ol>
+      </div>
+      <div class="flow reveal">
+        <h3>Every week</h3><p>The guard runs on its own.</p>
+        <ol>
+          <li>/expo-es-kit:audit --quick<span>scores and trend</span></li>
+          <li>/expo-es-kit:fix --only=P0<span>blockers first</span></li>
+        </ol>
+      </div>
+      <div class="flow reveal">
+        <h3>Before a release</h3><p>Go deep, then prove it.</p>
+        <ol>
+          <li>/expo-es-kit:audit --deep --api=../my-api</li>
+          <li>/expo-es-kit:fix --only=P0,P1</li>
+          <li>/expo-es-kit:privacy<span>store answers + manifest</span></li>
+          <li>/expo-es-kit:history<span>dashboard + badge</span></li>
+        </ol>
+      </div>
+      <div class="flow reveal">
+        <h3>SDK behind</h3><p>When the audit flags updates.</p>
+        <ol>
+          <li>/expo-es-kit:upgrade --plan-only<span>review the plan</span></li>
+          <li>/expo-es-kit:upgrade<span>one verified major at a time</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSTALL ================= -->
+<section class="alt" id="install">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow">Install</p>
+      <h2>Up and running in a minute</h2>
+      <p class="sub">Run these inside Claude Code. Restart it if the commands don't appear, then check <code>/plugin</code>.</p>
+    </div>
+    <div class="install">
+      <div class="istep reveal">
+        <span class="n">STEP 1</span><h3>Add the marketplace</h3><p>Install the plugin from GitHub.</p>
+        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy install commands" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit&#10;/plugin install expo-es-kit@expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
+/plugin install <span class="nw">expo-es-kit@expo-es-kit</span></pre></div>
+      </div>
+      <div class="istep reveal">
+        <span class="n">STEP 2</span><h3>Run your first audit</h3><p>From your Expo app's folder.</p>
+        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy audit command" data-copy="/expo-es-kit:audit --quick"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:audit --quick</pre></div>
+      </div>
+      <div class="istep reveal">
+        <span class="n">STEP 3</span><h3>Fix the blockers</h3><p>Then watch the trend go up.</p>
+        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy fix command" data-copy="/expo-es-kit:fix --only=P0"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:fix --only=P0</pre></div>
+      </div>
+    </div>
+    <div class="req reveal">
+      <span><b>Claude Code</b> with plugin support</span>
+      <span><b>Node.js</b> 18+</span>
+      <span><b>Expo</b> app, tested on SDK 54+</span>
+      <span>Optional: <b>git</b>, <b>Supabase MCP</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SAFETY ================= -->
+<section>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Safety</p>
+      <h2>Careful with your code and your secrets</h2>
+    </div>
+    <div class="safety">
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Audits are read-only</h3><p>They never edit code and never run <code>npm install</code>, <code>expo prebuild</code> or <code>expo export</code>.</p></div>
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Secrets stay secret</h3><p>Only env key names are read, never values. Secret-looking literals are redacted in every output.</p></div>
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>No silent overwrites</h3><p>Every write is preceded by a plan, diffs and your confirmation.</p></div>
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>CLI checks are opt-in</h3><p>You are asked before <code>expo-doctor</code>, <code>npm audit</code> and similar commands run.</p></div>
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Installs stay yours</h3><p>Dependency commands are printed for you to run on the OS you use, so WSL never breaks your <code>node_modules</code>.</p></div>
+      <div class="safe reveal"><div class="ic g"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Remote systems untouched</h3><p>Never applies migrations, never probes production, never touches remote databases.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="alt" id="faq">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq reveal">
+      <details><summary>Quick or deep: which should I run?</summary><p><b>Quick</b> is a single agent. It is cheap, takes about 5–15 minutes and suits weekly checks; its findings are not independently verified. <b>Deep</b> runs 8 specialists plus a verifier. It is thorough but uses many more tokens, so run it before releases or after big changes.</p></details>
+      <details><summary>Does it work without Supabase, HeroUI or MMKV?</summary><p>Yes. Categories adapt to what is installed and become n/a when they don't apply. The MMKV category, for example, scores whether your app would need it.</p></details>
+      <details><summary>My backend lives in another repo.</summary><p>Pass it with <code>--api=../my-api</code> on <code>audit</code>, <code>setup</code> or <code>backend</code>. Without it, the kit notices sibling folders that look like an API and asks whether to include them.</p></details>
+      <details><summary>A finding is wrong, or my code does it on purpose.</summary><p>Write the decision down in your docs or <code>CLAUDE.md</code>, ideally with the measurement behind it. Auditors respect documented, measured trade-offs, and the verifier rejects findings mitigated elsewhere.</p></details>
+      <details><summary>Are the privacy answers legal advice?</summary><p>No. They are draft answers based on what your code shows, with evidence for every “collected” item. You remain responsible for the final declarations.</p></details>
+      <details><summary>Monorepo?</summary><p>Point <code>appPath</code> at the Expo app (<code>apps/mobile</code>) and <code>--api</code> at the backend (<code>apps/api</code>).</p></details>
+      <details><summary>The commands don't show up after installing.</summary><p>Restart Claude Code, run <code>/plugin</code> and check that expo-es-kit is enabled. For local development use <code>claude --plugin-dir /path/to/expo-es-kit</code>.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section>
+  <div class="wrap">
+    <div class="final reveal">
+      <p class="eyebrow">Open source · MIT</p>
+      <h2>Give your agents the rules.<br>Ship with a verdict.</h2>
+      <p class="sub" style="margin-inline:auto">Install in a minute, run your first audit, and know exactly what stands between your app and the store.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#install">Install expo-es-kit <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/eusebiu-soica/expo-es-kit#readme">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-me">
+      <span>Built by <a href="https://eusebiusoica.com" rel="author">Eusebiu Soica</a></span>
+      <span class="socials">
+        <a class="icon-btn" href="https://eusebiusoica.com" aria-label="Eusebiu Soica's website"><svg aria-hidden="true"><use href="#i-globe"/></svg></a>
+        <a class="icon-btn" href="https://www.linkedin.com/in/eusebiu-soica" aria-label="Eusebiu Soica on LinkedIn"><svg aria-hidden="true"><use href="#i-in"/></svg></a>
+        <a class="icon-btn" href="https://github.com/eusebiu-soica" aria-label="Eusebiu Soica on GitHub"><svg aria-hidden="true"><use href="#i-gh"/></svg></a>
+      </span>
+    </div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/eusebiu-soica/expo-es-kit">GitHub</a>
+      <a href="https://github.com/eusebiu-soica/expo-es-kit#readme">README</a>
+      <a href="https://github.com/eusebiu-soica/expo-es-kit/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/eusebiu-soica/expo-es-kit/issues">Issues</a>
+    </nav>
+    <small class="foot-legal">MIT © eusebiu-soica · Not affiliated with Expo or Anthropic.</small>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.add('js');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // theme
+  try { var saved = localStorage.getItem('eek-theme'); if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved); } catch (e) {}
+  document.getElementById('theme').addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('eek-theme', next); } catch (e) {}
+  });
+
+  // nav border on scroll
+  var nav = document.getElementById('nav');
+  var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // copy buttons
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      var done = function(){
+        btn.classList.add('done');
+        var label = btn.querySelector('span'); var old = label && label.textContent;
+        if (label) label.textContent = 'Copied';
+        setTimeout(function(){ btn.classList.remove('done'); if (label) label.textContent = old; }, 1600);
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, function(){});
+      else { var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove(); }
+    });
+  });
+
+  // tabs
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab){
+    tabs.forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var d = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1 : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;
+      if (!d) return; e.preventDefault();
+      var n = tabs[(i + d + tabs.length) % tabs.length]; select(n); n.focus();
+    });
+  });
+
+  // reveal on scroll
+  var reveals = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || reduce) reveals.forEach(function(el){ el.classList.add('in'); });
+  else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, {rootMargin:'0px 0px -8% 0px'});
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  // terminal animation
+  var steps = document.querySelectorAll('#term .t-hide');
+  function show(el){
+    el.classList.add('t-show');
+    var bar = el.querySelector('.bar b'); if (bar) bar.style.width = bar.getAttribute('data-w') + '%';
+  }
+  if (reduce) steps.forEach(show);
+  else steps.forEach(function(el, i){
+    var delay = i < 3 ? 500 + i * 650 : 2400 + (i - 3) * 170;
+    setTimeout(function(){ show(el); }, delay);
+  });
+})();
+</script>
+</body>
+</html>
