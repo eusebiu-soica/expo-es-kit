@@ -1,0 +1,17 @@
+{
+  "description": "expo-es-kit guard: warns the agent (never blocks) when freshly written code in an Expo project matches a dangerous pattern.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

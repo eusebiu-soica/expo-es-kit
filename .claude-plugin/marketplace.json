@@ -1,0 +1,18 @@
+{
+  "name": "expo-es-kit",
+  "owner": {
+    "name": "eusebiu-soica",
+    "url": "https://github.com/eusebiu-soica"
+  },
+  "metadata": {
+    "description": "Production-readiness toolkit for Expo / React Native apps"
+  },
+  "plugins": [
+    {
+      "name": "expo-es-kit",
+      "version": "0.1.0",
+      "description": "Scored multi-agent audits, CLAUDE.md setup, backend/API security, foundation scaffolding, verified fixes and HeroUI Native audits for Expo apps.",
+      "source": "./"
+    }
+  ]
+}
