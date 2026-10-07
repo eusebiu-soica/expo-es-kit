@@ -1,6 +1,6 @@
 ---
 name: bundle-deps-auditor
-description: Expo/React Native bundle-size, dependency-health and SDK/OTA-update auditor. Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Expo/React Native bundle-size, dependency-health and SDK/OTA-update auditor. Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: cyan

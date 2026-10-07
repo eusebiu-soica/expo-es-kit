@@ -1,6 +1,6 @@
 ---
 name: backend-auditor
-description: Backend security auditor for Expo apps, mode-aware: direct-DB (Supabase RLS policies, security definer functions, storage policies, grants) and/or API (Next.js route handlers on Vercel, Supabase Edge Functions, Expo API routes: authz/IDOR, validation, rate limits, error leaks, secrets, webhooks). Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Backend security auditor for Expo apps, mode-aware: direct-DB (Supabase RLS policies, security definer functions, storage policies, grants) and/or API (Next.js route handlers on Vercel, Supabase Edge Functions, Expo API routes: authz/IDOR, validation, rate limits, error leaks, secrets, webhooks). Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: orange

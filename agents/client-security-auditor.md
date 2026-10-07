@@ -1,6 +1,6 @@
 ---
 name: client-security-auditor
-description: Expo/React Native client-side security auditor: secrets in bundle/EXPO_PUBLIC_, committed credential files, logging of tokens/PII, cleartext traffic, WebView, deep links, permissions, crypto misuse. Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Expo/React Native client-side security auditor: secrets in bundle/EXPO_PUBLIC_, committed credential files, logging of tokens/PII, cleartext traffic, WebView, deep links, permissions, crypto misuse. Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: red

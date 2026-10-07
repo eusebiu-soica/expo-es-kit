@@ -1,6 +1,6 @@
 ---
 name: storage-cache-auditor
-description: Expo/React Native storage and caching auditor: MMKV, expo-secure-store, AsyncStorage, TanStack Query cache/persistence, image cache, signed-URL cache, sign-out wipe. Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Expo/React Native storage and caching auditor: MMKV, expo-secure-store, AsyncStorage, TanStack Query cache/persistence, image cache, signed-URL cache, sign-out wipe. Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: green

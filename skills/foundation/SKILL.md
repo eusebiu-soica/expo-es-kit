@@ -1,6 +1,6 @@
 ---
 name: foundation
-description: Scaffold the proven production foundation for an Expo / React Native app — encrypted MMKV storage (key in SecureStore, canary, init timeout), SecureStore session adapter, Supabase client or API client with single-flight refresh, TanStack Query defaults with per-family snapshot cache, session-generation guard, full sign-out wipe, env validation, error boundary, safe native imports, signed-URL cache. Adapts to the existing code and never overwrites modules. Use when starting a new Expo app, when the user asks to "set up the base/foundation/core" of the app, or to fill gaps an audit found.
+description: "Scaffold the proven production foundation for an Expo / React Native app — encrypted MMKV storage (key in SecureStore, canary, init timeout), SecureStore session adapter, Supabase client or API client with single-flight refresh, TanStack Query defaults with per-family snapshot cache, session-generation guard, full sign-out wipe, env validation, error boundary, safe native imports, signed-URL cache. Adapts to the existing code and never overwrites modules. Use when starting a new Expo app, when the user asks to \"set up the base/foundation/core\" of the app, or to fill gaps an audit found."
 argument-hint: "[appPath] [--mode=direct-db|api|hybrid] [--only=storage,query,auth,api,env,errors]"
 ---
 

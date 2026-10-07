@@ -1,6 +1,6 @@
 ---
 name: perf-auditor
-description: Expo/React Native performance and startup-speed auditor (render cost, memoization vs React Compiler, lists, expo-image, Reanimated, overdraw, sheets, navigation, cold start). Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Expo/React Native performance and startup-speed auditor (render cost, memoization vs React Compiler, lists, expo-image, Reanimated, overdraw, sheets, navigation, cold start). Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: yellow

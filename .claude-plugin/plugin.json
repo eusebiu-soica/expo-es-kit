@@ -1,7 +1,7 @@
 {
   "name": "expo-es-kit",
-  "version": "0.1.0",
-  "description": "Build and audit production-ready Expo / React Native apps: scored multi-agent audits (performance, security, MMKV, secure storage, cache, bundle, deps, updates, auth sessions, backend/API), per-folder CLAUDE.md generation, backend security (Supabase direct-DB or API on Vercel/Edge/Expo API routes), foundation scaffolding, verified fixes, and HeroUI Native audits.",
+  "version": "0.2.0",
+  "description": "Build and audit production-ready Expo / React Native apps: scored multi-agent audits (performance, security, MMKV, secure storage, cache, bundle, deps, updates, auth sessions, backend/API), per-folder CLAUDE.md generation, backend security (Supabase direct-DB or API on Vercel/Edge/Expo API routes), foundation scaffolding, verified fixes, store privacy forms (App Privacy / Data safety / privacy manifest), verified SDK upgrades, audit history dashboard and HeroUI Native audits.",
   "author": {
     "name": "eusebiu-soica",
     "url": "https://github.com/eusebiu-soica"
@@ -17,7 +17,10 @@
     "secure-store",
     "supabase",
     "heroui-native",
-    "claude-code"
+    "claude-code",
+    "privacy-manifest",
+    "data-safety",
+    "expo-upgrade"
   ],
   "homepage": "https://github.com/eusebiu-soica/expo-es-kit#readme",
   "repository": "https://github.com/eusebiu-soica/expo-es-kit"

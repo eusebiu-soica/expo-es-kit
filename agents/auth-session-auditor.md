@@ -1,6 +1,6 @@
 ---
 name: auth-session-auditor
-description: Auth & session lifecycle auditor for Expo apps and their backend: token storage, Supabase client config, PKCE/OAuth, refresh handling, 401 flow, sign-out wipe, account switch races, server-side token verification, device sessions. Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Auth & session lifecycle auditor for Expo apps and their backend: token storage, Supabase client config, PKCE/OAuth, refresh handling, 401 flow, sign-out wipe, account switch races, server-side token verification, device sessions. Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: purple

@@ -1,6 +1,6 @@
 ---
 name: release-auditor
-description: Release-readiness and agent-instructions auditor for Expo apps: crash reporting, error boundaries, store compliance (privacy manifest, permission strings, account deletion), EAS profiles, CI gates, code quality signals, and CLAUDE.md/rules coverage and staleness. Used by the expo-es-kit audit skill in deep mode; read-only.
+description: "Release-readiness and agent-instructions auditor for Expo apps: crash reporting, error boundaries, store compliance (privacy manifest, permission strings, account deletion), EAS profiles, CI gates, code quality signals, and CLAUDE.md/rules coverage and staleness. Used by the expo-es-kit audit skill in deep mode; read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: blue

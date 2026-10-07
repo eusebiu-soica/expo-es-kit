@@ -1,6 +1,6 @@
 ---
 name: finding-verifier
-description: Adversarial verifier for expo-es-kit audit findings. Re-checks each P0/P1 finding against the actual code (and shared helpers/middleware) and returns confirmed / downgraded / rejected with evidence. Also used by the fix skill to confirm a finding is actually fixed. Read-only.
+description: "Adversarial verifier for expo-es-kit audit findings. Re-checks each P0/P1 finding against the actual code (and shared helpers/middleware) and returns confirmed / downgraded / rejected with evidence. Also used by the fix skill to confirm a finding is actually fixed. Read-only."
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: red

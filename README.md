@@ -4,9 +4,9 @@
 
 **Build and audit production-ready Expo & React Native apps with Claude Code.**
 
-Scored multi-agent audits · verified fixes · per-folder agent rules · backend & auth security · HeroUI Native
+Scored multi-agent audits · verified fixes · per-folder agent rules · backend & auth security · store privacy forms · SDK upgrades · HeroUI Native
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue?style=flat-square)](CHANGELOG.md)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54%2B-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev)
 [![React Native](https://img.shields.io/badge/React_Native-0.81%2B-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactnative.dev)
@@ -17,7 +17,7 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 [![GitHub stars](https://img.shields.io/github/stars/eusebiu-soica/expo-es-kit?style=flat-square&logo=github)](https://github.com/eusebiu-soica/expo-es-kit/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/eusebiu-soica/expo-es-kit?style=flat-square)](https://github.com/eusebiu-soica/expo-es-kit/commits)
 
-[Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [FAQ](#-faq--troubleshooting)
+[Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [Privacy](#-privacy) · [Upgrade](#-upgrade) · [History](#-history) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -35,6 +35,9 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 - [Backend & auth](#-backend)
 - [Foundation](#-foundation)
 - [HeroUI Native](#-heroui)
+- [Store privacy forms](#-privacy)
+- [SDK upgrade](#-upgrade)
+- [Audit history & badge](#-history)
 - [Guard hook](#-guard-hook)
 - [Recommended workflows](#-recommended-workflows)
 - [Reports & files](#-reports--files)
@@ -68,6 +71,9 @@ Coding agents write a lot of code fast, and they forget the rules that make a mo
 | 🧱 **Proven foundation** | Encrypted MMKV, a SecureStore session adapter, API client with single-flight refresh, query cache, full sign-out wipe, env validation… adapted to your app. |
 | 🚨 **Real-time guard** | A warn-only hook that flags dangerous code as soon as an agent writes it. |
 | 🎨 **HeroUI Native** | Import strategy, sheet mounting, skeleton cost, overdraw, design-token adoption %, animations, accessibility. |
+| 🏪 **Store privacy forms** | Evidence-based answers for **App Store App Privacy** and **Google Play Data safety**, plus a privacy manifest check, from your SDKs, permissions, code and DB schema. |
+| ⬆️ **Safe SDK upgrades** | One major at a time, with gates and a device smoke test after each step. Patch and library compatibility checks, OTA safety. |
+| 📈 **Audit history** | An offline HTML dashboard of your scores over time, plus a score badge for your README. |
 
 How it compares:
 
@@ -81,6 +87,9 @@ How it compares:
 | Backend: RLS **and** API security | ❌ | ❌ | ✅ |
 | Applies fixes **and** re-verifies | ❌ | ❌ | ✅ |
 | Generates per-folder agent rules | ❌ | ❌ | ✅ |
+| Store privacy forms from code evidence | ❌ | ❌ | ✅ |
+| SDK upgrade with gates per step | ✅ (`expo-upgrade`) | ❌ | ✅ (uses it when installed) |
+| Score history + badge | ❌ | ❌ | ✅ |
 
 > The patterns come from a real production Expo app. They were measured on min-spec Android devices, not copied from blog posts.
 
@@ -95,7 +104,7 @@ How it compares:
 /plugin install expo-es-kit@expo-es-kit
 ```
 
-Restart Claude Code if the commands don't appear. Check with `/plugin`; you should see `expo-es-kit` with 6 skills and 9 agents.
+Restart Claude Code if the commands don't appear. Check with `/plugin`; you should see `expo-es-kit` with 9 skills and 9 agents.
 
 **2. Run your first audit** from your app's folder:
 
@@ -135,6 +144,9 @@ That's it. You can also just ask in plain words: *"audit my app before release"*
 | [`/expo-es-kit:backend`](#-backend) | Design / audit / implement the backend securely | `implement` only |
 | [`/expo-es-kit:foundation`](#-foundation) | Scaffold the core production modules | ✅ after confirmation |
 | [`/expo-es-kit:heroui`](#-heroui) | HeroUI Native audit + setup | `setup` only |
+| [`/expo-es-kit:privacy`](#-privacy) | App Store App Privacy + Play Data safety answers, privacy manifest | `docs/store/` (after confirmation) |
+| [`/expo-es-kit:upgrade`](#-upgrade) | Expo SDK upgrade, one verified major at a time | ✅ after confirmation |
+| [`/expo-es-kit:history`](#-history) | Score dashboard (HTML) + README badge | `docs/audits/` only |
 
 Every command that writes **shows a plan and diffs first** and **never overwrites** your files.
 
@@ -366,6 +378,79 @@ This command only runs when `heroui-native` is installed. It scores 5 areas:
 
 ---
 
+## 🏪 Privacy
+
+```text
+/expo-es-kit:privacy [appPath] [--api=<apiRepoPath>] [--out=<dir>]
+```
+
+Store privacy forms are where most apps get it wrong. Crash reporters get forgotten, data gets marked "not linked" while a user id is sent, and backend data is skipped because "it's only our server". This command builds the answers **from evidence**:
+
+| Source | What it finds |
+|---|---|
+| **Installed SDKs** | 35+ known SDKs (Sentry, Firebase, RevenueCat, PostHog, OneSignal, AdMob…) with the data each one collects, checked against *your* config (user identification, replay, ads) |
+| **Permissions** | Declared vs actually used: iOS usage strings, Expo config-plugin options, Android permissions |
+| **Your database** | Column names in your migrations mapped to data types (email, phone, health/fitness, photos, location, payments…). Data your own backend stores **is** collected. |
+| **Signals** | Account creation vs deletion, ATT prompt, advertising IDs, analytics identify calls, privacy policy link, cleartext traffic |
+
+It writes these files to `docs/store/`:
+
+| File | Contents |
+|---|---|
+| `app-privacy-ios.md` | Answers in App Store Connect order, plus the final label (*Data Used to Track You / Linked to You / Not Linked to You*) |
+| `data-safety-android.md` | Collected vs shared, encryption in transit, deletion, and the per-type table |
+| `privacy-manifest.md` | Proposed `ios.privacyManifests` (required-reason APIs) and how to verify the merged `PrivacyInfo.xcprivacy` |
+| `privacy-findings.md` | Rejection risks (missing usage strings, tracking without ATT, no account deletion…) and the **Confirm** questions only you can answer |
+
+> Every "collected" answer cites evidence (`file:line` or SDK and config). These are draft answers based on your code, not legal advice; you remain responsible for the final declarations.
+
+---
+
+## ⬆️ Upgrade
+
+```text
+/expo-es-kit:upgrade [appPath] [--to=<sdk>] [--plan-only]
+```
+
+1. **Assess**: current SDK, native dependencies, config plugins, `patch-package` patches, CNG vs committed native folders, `runtimeVersion` policy, and baseline gates.
+2. **Plan**: for each major, the breaking changes from the official release notes, grep hits in your code, library compatibility, and the blockers. `--plan-only` stops here.
+3. **Execute one major at a time**:
+   - a branch per step
+   - install commands printed for you to run
+   - migrations applied, and patches re-validated
+   - OTA safety checked
+   - gates run (typecheck, lint, tests, `expo-doctor`, `expo install --check`, `npm audit`)
+   - dev-client rebuild and a **device smoke-test checklist** that you confirm
+   - a commit
+4. **Finish**: a regression scan, a re-audit of deps, updates, performance and startup, and an upgrade report with the before/after scores.
+
+It uses the official Expo upgrade skill when it's installed (`/plugin install expo@claude-plugins-official`). It never skips a major, unless Expo officially recommends the skip; for example, SDK ≤55 goes straight to 57.
+
+---
+
+## 📈 History
+
+```text
+/expo-es-kit:history [appPath]
+```
+
+It turns every `docs/audits/expo-audit-*.json` into **`docs/audits/history.html`**. This is a self-contained page that works offline, in light and dark mode, and on mobile. It shows:
+
+- the overall score over time
+- per-category trend panels with status
+- open P0/P1/P2 findings per audit
+- a table of all audits
+
+It also writes a **score badge**:
+
+```md
+[![Expo audit](docs/audits/badge.svg)](docs/audits/history.html)
+```
+
+There is also `badge.json` in shields.io endpoint format, for public repos.
+
+---
+
 ## 🚨 Guard hook
 
 Every time an agent uses `Write` or `Edit` in an **Expo project**, a fast local check scans **only the text just written**. When something looks dangerous, the agent gets a warning right away and can correct itself. The hook **never blocks** an edit.
@@ -408,6 +493,15 @@ To turn it off for one project, see [Configuration](#-configuration).
 /expo-es-kit:audit --deep --api=../my-api
 /expo-es-kit:fix --only=P0,P1
 /expo-es-kit:audit --quick         → confirm the trend ▲ and the verdict
+/expo-es-kit:privacy               → store privacy answers + manifest check
+/expo-es-kit:history               → dashboard + badge
+```
+
+**When the SDK falls behind** (the audit flags `updates`):
+
+```text
+/expo-es-kit:upgrade --plan-only   → review the plan
+/expo-es-kit:upgrade               → execute, one verified major at a time
 ```
 
 **After a big refactor or library change**
@@ -426,6 +520,9 @@ To turn it off for one project, see [Configuration](#-configuration).
 | `docs/audits/expo-fix-YYYY-MM-DD.md` + `.json` | `fix` |
 | `docs/audits/backend-audit-YYYY-MM-DD.md` + `.json` | `backend audit` |
 | `docs/audits/heroui-audit-YYYY-MM-DD.md` + `.json` | `heroui audit` |
+| `docs/audits/expo-upgrade-YYYY-MM-DD.md` | `upgrade` |
+| `docs/audits/history.html`, `badge.svg`, `badge.json` | `history` |
+| `docs/store/*.md`, `privacy-answers.json` | `privacy` |
 | `**/CLAUDE.md`, `.claude/rules/*.md` | `setup`, `heroui setup` |
 
 - The **JSON** is what powers the trend column, "recurring finding" detection and the `fix` command.
@@ -523,10 +620,13 @@ expo-es-kit/
 │   ├── setup/             SKILL.md · templates/ (17 CLAUDE.md templates: app, data modes, server)
 │   ├── backend/           SKILL.md · references/ (modes, Supabase, Next.js, Edge, Expo API routes, auth, OWASP)
 │   ├── foundation/        SKILL.md · templates/code/ (12 TypeScript modules)
-│   └── heroui/            SKILL.md · references/ · templates/
+│   ├── heroui/            SKILL.md · references/ · templates/
+│   ├── privacy/           SKILL.md · references/ (Apple/Google data types, SDK catalog JSON, forms guide, manifest)
+│   ├── upgrade/           SKILL.md · references/ (playbook, SDK 52–58 notes, library compatibility)
+│   └── history/           SKILL.md
 ├── agents/                8 read-only specialist auditors + finding-verifier
 ├── hooks/                 hooks.json · guard.mjs (PostToolUse, warn-only)
-├── scripts/               scan.mjs · rules.mjs · query-scan.mjs · diff-scans.mjs · detect-mode.mjs · validate-plugin.mjs
+├── scripts/               scan.mjs · rules.mjs · privacy-scan.mjs · history.mjs · query-scan.mjs · diff-scans.mjs · detect-mode.mjs · validate-plugin.mjs
 └── shared/contract.md     categories · severities · scoring · JSON shapes
 ```
 
