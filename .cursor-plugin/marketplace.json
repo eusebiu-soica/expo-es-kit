@@ -14,7 +14,8 @@
       "source": "./",
       "description": "Scored audits, in-depth security audit, verified fixes, agent rules, backend security, privacy forms, SDK upgrades and audit history for Expo apps.",
       "version": "0.3.0",
-      "category": "Developer Tools"
+      "category": "Developer Tools",
+      "logo": "assets/logo.svg"
     }
   ]
 }
