@@ -2,13 +2,15 @@
 
 # 🛡️ expo-es-kit
 
-**Build and audit production-ready Expo & React Native apps with Claude Code.**
+**Build, audit and secure production-ready Expo & React Native apps with Claude Code, Codex and Cursor.**
 
-Scored multi-agent audits · verified fixes · per-folder agent rules · backend & auth security · store privacy forms · SDK upgrades · HeroUI Native
+Scored multi-agent audits · in-depth security audit · verified fixes · per-folder agent rules · backend & auth security · store privacy forms · SDK upgrades · HeroUI Native
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue?style=flat-square)](CHANGELOG.md)
 [![Website](https://img.shields.io/badge/website-live-FF7A45?style=flat-square&logo=githubpages&logoColor=white)](https://expo-es-kit.eusebiusoica.com/)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
+[![Codex](https://img.shields.io/badge/Codex-plugin-412991?style=flat-square&logo=openai&logoColor=white)](#-codex--cursor)
+[![Cursor](https://img.shields.io/badge/Cursor-plugin-000000?style=flat-square&logo=cursor&logoColor=white)](#-codex--cursor)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54%2B-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev)
 [![React Native](https://img.shields.io/badge/React_Native-0.81%2B-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactnative.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-ready-3FCF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
@@ -18,7 +20,7 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 [![GitHub stars](https://img.shields.io/github/stars/eusebiu-soica/expo-es-kit?style=flat-square&logo=github)](https://github.com/eusebiu-soica/expo-es-kit/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/eusebiu-soica/expo-es-kit?style=flat-square)](https://github.com/eusebiu-soica/expo-es-kit/commits)
 
-[🌐 Website](https://expo-es-kit.eusebiusoica.com/) · [Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [Privacy](#-privacy) · [Upgrade](#-upgrade) · [History](#-history) · [FAQ](#-faq--troubleshooting)
+[🌐 Website](https://expo-es-kit.eusebiusoica.com/) · [Quick start](#-quick-start) · [Commands](#-commands) · [Audit](#-audit) · [Security](#-security) · [Fix](#-fix) · [Setup](#-setup) · [Backend](#-backend) · [Foundation](#-foundation) · [HeroUI](#-heroui) · [Privacy](#-privacy) · [Upgrade](#-upgrade) · [History](#-history) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -31,6 +33,7 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 - [Requirements](#-requirements)
 - [Commands](#-commands)
 - [Audit](#-audit)
+- [Security audit](#-security)
 - [Fix](#-fix)
 - [Setup (agent instructions)](#-setup)
 - [Backend & auth](#-backend)
@@ -40,6 +43,7 @@ Scored multi-agent audits · verified fixes · per-folder agent rules · backend
 - [SDK upgrade](#-upgrade)
 - [Audit history & badge](#-history)
 - [Guard hook](#-guard-hook)
+- [Codex & Cursor](#-codex--cursor)
 - [Recommended workflows](#-recommended-workflows)
 - [Reports & files](#-reports--files)
 - [Safety & privacy](#-safety--privacy)
@@ -65,6 +69,7 @@ Coding agents write a lot of code fast, and they forget the rules that make a mo
 | | |
 |---|---|
 | 📊 **Scored audits** | 13 categories (14 with HeroUI Native), each scored **0–10**, with evidence (`file:line`) for every finding, a **GO / NO-GO** verdict, and a trend vs your last audit. |
+| 🛡️ **In-depth security audit** | Secrets (code, bundle, env, **git history**), SQL/PostgREST injection **traced from every input to its sink**, sensitive data in URLs and deep links, cross-user/tenant access (IDOR, RLS predicates), platform and API hardening. Scored per area, with an **OWASP Mobile + API Top 10** matrix and an access matrix. |
 | 🤖 **Deep multi-agent mode** | 8 specialist auditors run in parallel. An **adversarial verifier** then tries to disprove every serious finding, so you get fewer false positives. |
 | 🔁 **Fixes that prove themselves** | `fix` applies findings by priority and **always ends with a full verification**: gates, an independent re-check of each finding, a regression scan, a re-audit, and a before/after table. |
 | 🧭 **Agent rules where they're needed** | Generates short per-folder `CLAUDE.md` files (components, lib, storage, data layer, routes, migrations…). It detects **stale** rules you already have. |
@@ -89,6 +94,8 @@ How it compares:
 | Applies fixes **and** re-verifies | ❌ | ❌ | ✅ |
 | Generates per-folder agent rules | ❌ | ❌ | ✅ |
 | Store privacy forms from code evidence | ❌ | ❌ | ✅ |
+| Input → sink injection tracing + access matrix + OWASP matrix | ❌ | ❌ | ✅ |
+| Works in Claude Code, Codex and Cursor | ➖ | ➖ | ✅ |
 | SDK upgrade with gates per step | ✅ (`expo-upgrade`) | ❌ | ✅ (uses it when installed) |
 | Score history + badge | ❌ | ❌ | ✅ |
 
@@ -98,14 +105,15 @@ How it compares:
 
 ## 🚀 Quick start
 
-**1. Install** (inside Claude Code):
+**1. Install** in your tool:
 
-```text
-/plugin marketplace add eusebiu-soica/expo-es-kit
-/plugin install expo-es-kit@expo-es-kit
-```
+| Tool | Install |
+|---|---|
+| **Claude Code** | `/plugin marketplace add eusebiu-soica/expo-es-kit` then `/plugin install expo-es-kit@expo-es-kit` |
+| **Codex** | `codex plugin marketplace add eusebiu-soica/expo-es-kit`, then install **expo-es-kit** from the plugin list ([details](#-codex--cursor)) |
+| **Cursor** | Add the repo as a plugin marketplace (Customize → Plugins), or clone it to `~/.cursor/plugins/local/expo-es-kit` ([details](#-codex--cursor)) |
 
-Restart Claude Code if the commands don't appear. Check with `/plugin`; you should see `expo-es-kit` with 9 skills and 9 agents.
+In Claude Code, restart if the commands don't appear and check with `/plugin`: you should see `expo-es-kit` with 10 skills and 12 agents.
 
 **2. Run your first audit** from your app's folder:
 
@@ -127,10 +135,10 @@ That's it. You can also just ask in plain words: *"audit my app before release"*
 
 | | |
 |---|---|
-| **Claude Code** | A recent version with plugin support |
+| **Agent** | A recent **Claude Code**, **Codex** or **Cursor** with plugin support |
 | **Node.js** | **18+**, for the local scanner and the guard hook |
 | **Project** | An Expo app (`expo` in `package.json`). Tested on **SDK 54**; works on any recent SDK. Bare React Native works partially (Expo-specific checks become n/a). |
-| **Optional** | `git` (detects committed secrets), network access for the CLI checks (`expo-doctor`, `npm audit`) |
+| **Optional** | `git` (detects committed secrets and scans history for leaked ones), network access for the CLI checks (`expo-doctor`, `npm audit`) |
 | **Optional** | The [Supabase plugin/MCP](https://supabase.com/docs/guides/getting-started/mcp), for live advisors during backend audits |
 
 ---
@@ -148,6 +156,7 @@ That's it. You can also just ask in plain words: *"audit my app before release"*
 | [`/expo-es-kit:privacy`](#-privacy) | App Store App Privacy + Play Data safety answers, privacy manifest | `docs/store/` (after confirmation) |
 | [`/expo-es-kit:upgrade`](#-upgrade) | Expo SDK upgrade, one verified major at a time | ✅ after confirmation |
 | [`/expo-es-kit:history`](#-history) | Score dashboard (HTML) + README badge | `docs/audits/` only |
+| [`/expo-es-kit:security`](#-security) | In-depth security audit: secrets, injection, URLs, access control, OWASP | ❌ (report only) |
 
 Every command that writes **shows a plan and diffs first** and **never overwrites** your files.
 
@@ -230,6 +239,44 @@ Blocking: REL-001
 The saved report also has a section per category with **strengths**, every finding (evidence, impact, fix and effort), and a **"What was not checked"** section, so you know the limits of each run.
 
 Write the report in your language: ask in Romanian, and the report prose comes out in Romanian, while the code identifiers stay in English.
+
+---
+
+## 🔎 Security
+
+```text
+/expo-es-kit:security [appPath] [--api=<apiRepoPath>] [--quick | --deep] [--history] [--probe] [--only=<areas>]
+```
+
+The `audit` command tells you whether the app is production-ready. `security` goes **deep on one question: can someone steal data, secrets or access?** It scores 9 areas and covers the app, its API repo and the database:
+
+| Area | What it checks |
+|---|---|
+| **Secrets** | Literals in code, `EXPO_PUBLIC_*` and app config (they ship in the bundle), committed env and credential files, EAS/CI, and **git history** with `--history` (a secret deleted from HEAD is still leaked: rotate it) |
+| **Injection** | Every `TextInput`, textarea and form is **traced to its sinks**: PostgREST `.or()`/`.filter()` strings, raw SQL (`pg`, Prisma `$queryRawUnsafe`, knex), dynamic SQL in plpgsql functions, expo-sqlite, WebView HTML/JS, shell, SSRF, file paths, regex, LLM prompts |
+| **URL exposure** | Passwords, emails, phones, OTPs and tokens in query strings, expo-router params, deep links, open redirects, OAuth callbacks |
+| **Access control** | An access matrix (resource × role × operation): IDOR/BOLA in API routes, mass assignment, RLS predicates (`using (true)`, `auth.uid() is not null`, ignored tenant columns, `user_metadata`), client-callable `security definer` RPCs, storage and views |
+| **Auth** | Token storage, refresh, PKCE, server-side JWT verification, sign-out wipe |
+| **Data exposure** | PII in logs, analytics, crash reports, push payloads, clipboard, screenshots, API errors |
+| **Platform** | `secureTextEntry`, WebView config and `postMessage`, cleartext/ATS, backups, exported Android components |
+| **API hardening** | Rate limits, uploads, webhook signatures, CORS, security headers, CSRF and cookies, error leaks |
+| **Supply chain** | Lockfile, audit gate in CI, install scripts, git/URL dependencies |
+
+**How it works**
+
+1. `scripts/security-scan.mjs` (zero dependencies, local) maps the input surfaces, parses every RLS policy, finds dynamic SQL, inventories URL parameter names, checks security headers and the supply chain, and optionally scans git history. Values are always redacted.
+2. **Quick**: one agent works through the checklists. **Deep**: 6 specialists in parallel (`injection-auditor`, `access-control-auditor`, `exposure-auditor` plus the auth, client and backend auditors), then the **adversarial verifier** on every P0/P1.
+3. **Optional probes** (`--probe`): BOLA swap between two test accounts, filter-injection payloads, missing/expired tokens, oversized bodies, rate-limit bursts. They run only after you confirm, **only against localhost or a preview environment**, never production.
+4. The report `docs/audits/security-audit-YYYY-MM-DD.md` + `.json` has:
+   - the security score and verdict
+   - a table per area
+   - the **OWASP Mobile Top 10 (2024) and API Top 10 (2023) matrix**
+   - the access matrix and the **input → sink table**
+   - findings with `file:line`, and what was not checked
+
+   `/expo-es-kit:fix` reads security reports too, and `history` charts the security score with its own badge.
+
+> Static analysis can't prove everything. The report says what it could not check and suggests the probe or two-user test that would.
 
 ---
 
@@ -454,7 +501,7 @@ There is also `badge.json` in shields.io endpoint format, for public repos.
 
 ## 🚨 Guard hook
 
-Every time an agent uses `Write` or `Edit` in an **Expo project**, a fast local check scans **only the text just written**. When something looks dangerous, the agent gets a warning right away and can correct itself. The hook **never blocks** an edit.
+Every time an agent uses `Write` or `Edit` (or `apply_patch` in Codex) in an **Expo project**, a fast local check scans **only the text just written**. When something looks dangerous, the agent gets a warning right away and can correct itself. The hook **never blocks** an edit.
 
 | Catches | Severity |
 |---|:---:|
@@ -463,12 +510,32 @@ Every time an agent uses `Write` or `Edit` in an **Expo project**, a fast local 
 | Secret-looking `EXPO_PUBLIC_*` variable | P0 |
 | Hard-coded secrets (Stripe, AWS, GitHub, Supabase `sb_secret_`, private keys…) | P0 |
 | Tokens in logs or in URL query strings | P1 |
+| SQL or PostgREST filters built by string interpolation, `$queryRawUnsafe`, shell commands with interpolation | P1 |
+| Password, email, phone or OTP in a URL query string | P1 |
 | Cleartext `http://` endpoints | P1 |
 | `moment` import | P1 |
 | Credentials in key-value storage keys | P1 |
 | Whole-cache query persistence, full `lodash`, RN `Image` for remote images, root `heroui-native` import | P2 |
 
 To turn it off for one project, see [Configuration](#-configuration).
+
+---
+
+## 🧩 Codex & Cursor
+
+The same repository is a plugin for **Claude Code**, **OpenAI Codex** and **Cursor**. The skills use the open [Agent Skills](https://agentskills.io) format, so the instructions are identical in all three.
+
+| | Claude Code | Codex | Cursor |
+|---|---|---|---|
+| Manifest | `.claude-plugin/` | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json` | `.cursor-plugin/` |
+| Install | `/plugin marketplace add eusebiu-soica/expo-es-kit` | `codex plugin marketplace add eusebiu-soica/expo-es-kit` | Plugin marketplace from the repo, or `~/.cursor/plugins/local/expo-es-kit` |
+| Run a skill | `/expo-es-kit:security` | Mention the skill (`$security`) or ask in plain words | `/security` or ask in plain words |
+| Deep mode subagents | ✅ built in | Optional: copy `codex/agents/*.toml` to `~/.codex/agents/` | ✅ `agents/` |
+| Guard hook | ✅ | ✅ after you trust it in `/hooks` (desktop-installed plugins) | ✅ `hooks/cursor-hooks.json` |
+
+- **Without subagents**, deep mode still works: the skill runs each auditor's instructions one after another (slower, same report).
+- Plain-word requests work everywhere: *"run a security audit of my app and its API"*, *"audit my Expo app before release"*.
+- Codex and Cursor support for hooks and plugin agents is newer than Claude Code's. If something doesn't load, the skills alone still give you every audit; please open an issue.
 
 ---
 
@@ -492,6 +559,7 @@ To turn it off for one project, see [Configuration](#-configuration).
 
 ```text
 /expo-es-kit:audit --deep --api=../my-api
+/expo-es-kit:security --deep --api=../my-api --history
 /expo-es-kit:fix --only=P0,P1
 /expo-es-kit:audit --quick         → confirm the trend ▲ and the verdict
 /expo-es-kit:privacy               → store privacy answers + manifest check
@@ -522,7 +590,8 @@ To turn it off for one project, see [Configuration](#-configuration).
 | `docs/audits/backend-audit-YYYY-MM-DD.md` + `.json` | `backend audit` |
 | `docs/audits/heroui-audit-YYYY-MM-DD.md` + `.json` | `heroui audit` |
 | `docs/audits/expo-upgrade-YYYY-MM-DD.md` | `upgrade` |
-| `docs/audits/history.html`, `badge.svg`, `badge.json` | `history` |
+| `docs/audits/security-audit-YYYY-MM-DD.md` + `.json` | `security` |
+| `docs/audits/history.html`, `badge.svg`, `badge.json`, `badge-security.svg` | `history` |
 | `docs/store/*.md`, `privacy-answers.json` | `privacy` |
 | `**/CLAUDE.md`, `.claude/rules/*.md` | `setup`, `heroui setup` |
 
@@ -614,8 +683,11 @@ Point `appPath` at the Expo app folder (`apps/mobile`) and `--api` at the backen
 
 ```
 expo-es-kit/
-├── .claude-plugin/        plugin.json · marketplace.json
+├── .claude-plugin/        plugin.json · marketplace.json (Claude Code)
+├── .codex-plugin/         plugin.json (Codex) · .agents/plugins/marketplace.json
+├── .cursor-plugin/        plugin.json · marketplace.json (Cursor)
 ├── skills/
+│   ├── security/          SKILL.md · references/ (methodology, injection, access control, secrets & exposure, URLs & deep links, mobile platform, API hardening, OWASP mapping, probes)
 │   ├── audit/             SKILL.md · references/ (scoring rubric, report template, measuring, 13 checks files)
 │   ├── fix/               SKILL.md
 │   ├── setup/             SKILL.md · templates/ (17 CLAUDE.md templates: app, data modes, server)
@@ -625,9 +697,10 @@ expo-es-kit/
 │   ├── privacy/           SKILL.md · references/ (Apple/Google data types, SDK catalog JSON, forms guide, manifest)
 │   ├── upgrade/           SKILL.md · references/ (playbook, SDK 52–58 notes, library compatibility)
 │   └── history/           SKILL.md
-├── agents/                8 read-only specialist auditors + finding-verifier
-├── hooks/                 hooks.json · guard.mjs (PostToolUse, warn-only)
-├── scripts/               scan.mjs · rules.mjs · privacy-scan.mjs · history.mjs · query-scan.mjs · diff-scans.mjs · detect-mode.mjs · validate-plugin.mjs
+├── agents/                11 read-only specialist auditors + finding-verifier
+├── codex/agents/          the same agents as Codex TOML (generated)
+├── hooks/                 hooks.json · cursor-hooks.json · guard.mjs (PostToolUse, warn-only)
+├── scripts/               scan.mjs · security-scan.mjs · rules.mjs · lib.mjs · privacy-scan.mjs · history.mjs · query-scan.mjs · diff-scans.mjs · detect-mode.mjs · build-codex-agents.mjs · validate-plugin.mjs
 └── shared/contract.md     categories · severities · scoring · JSON shapes
 ```
 
@@ -656,7 +729,8 @@ Contributions are welcome: new rules, better checks, more frameworks.
 - **Before opening a PR**:
 
 ```bash
-node scripts/validate-plugin.mjs        # structure, references, rules
+node scripts/build-codex-agents.mjs     # regenerate codex/agents/*.toml after editing agents/*.md
+node scripts/validate-plugin.mjs        # structure, references, rules, all three manifests
 claude plugin validate .                 # official manifest validation
 node scripts/scan.mjs /path/to/an/expo-app --summary --pretty | head -50
 ```

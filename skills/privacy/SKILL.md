@@ -1,6 +1,6 @@
 ---
 name: privacy
-description: "Generate the App Store \"App Privacy\" (privacy nutrition label) answers and the Google Play \"Data safety\" answers for an Expo / React Native app, from evidence — installed SDKs, permissions, code, the app's own database schema and backend — and check the iOS privacy manifest (required-reason APIs, tracking, usage strings, ATT, account deletion). Outputs copy-ready answers per data type with the evidence behind each one, plus inconsistencies that cause store rejections. Use when the user prepares a store submission, asks about privacy labels, data safety form, privacy manifest, ITMS-91053, ATT, or \"what data does my app collect\"."
+description: "Generate App Store \"App Privacy\" and Google Play \"Data safety\" answers for an Expo / React Native app from evidence (SDKs, permissions, code, DB schema, backend) and check the iOS privacy manifest (required-reason APIs, tracking, usage strings, ATT, account deletion). Copy-ready answers per data type plus rejection risks. Use for store submissions, privacy labels, data safety, privacy manifest, ITMS-91053, ATT."
 argument-hint: "[appPath] [--api=<apiRepoPath>] [--out=<dir>]"
 ---
 
@@ -14,7 +14,7 @@ You produce **evidence-backed** answers for two store forms and a privacy-manife
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - Read these references in `PLUGIN_ROOT/skills/privacy/references/`:
 
 | File | What it gives you |

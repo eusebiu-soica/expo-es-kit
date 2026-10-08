@@ -1,6 +1,6 @@
 ---
 name: foundation
-description: "Scaffold the proven production foundation for an Expo / React Native app — encrypted MMKV storage (key in SecureStore, canary, init timeout), SecureStore session adapter, Supabase client or API client with single-flight refresh, TanStack Query defaults with per-family snapshot cache, session-generation guard, full sign-out wipe, env validation, error boundary, safe native imports, signed-URL cache. Adapts to the existing code and never overwrites modules. Use when starting a new Expo app, when the user asks to \"set up the base/foundation/core\" of the app, or to fill gaps an audit found."
+description: "Scaffold the production foundation of an Expo / React Native app: encrypted MMKV (key in SecureStore), SecureStore session adapter, Supabase or API client with single-flight refresh, TanStack Query defaults and snapshot cache, sign-out wipe, env validation, error boundary, signed-URL cache. Adapts to existing code, never overwrites. Use when starting an app, to \"set up the base/core\", or to fill audit gaps."
 argument-hint: "[appPath] [--mode=direct-db|api|hybrid] [--only=storage,query,auth,api,env,errors]"
 ---
 
@@ -10,7 +10,7 @@ You add the core modules that make an Expo app fast and safe by default. **Adapt
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - The templates are in `PLUGIN_ROOT/skills/foundation/templates/code/`. Each one has a header that lists the deps it needs and how to adapt it.
 - Run `node "$PLUGIN_ROOT/scripts/scan.mjs" <app> --summary > "$TMP/scan.json"` to learn:
   - the stack and libs

@@ -10,9 +10,9 @@ argument-hint: "[appPath] [--dir=docs/audits] [--out=<file.html>]"
 
 1. Locate the plugin root:
    - `PLUGIN_ROOT` is two levels above this SKILL.md.
-   - If that is unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+   - If that is unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 2. Run `node "$PLUGIN_ROOT/scripts/history.mjs" <appPath> [--dir=…] [--out=…]`.
-   - It reads every expo-es-kit report JSON in the audits folder: `type: "audit"` for the trend, and `type: "fix"` reports are counted.
+   - It reads every expo-es-kit report JSON in the audits folder: `type: "audit"` for the trend, `type: "security-audit"` for a separate security-score chart (and `badge-security.svg` / `badge-security.json`), and `type: "fix"` reports are counted. With only security audits, those become the main series.
    - It writes these files:
 
      | File | Contents |

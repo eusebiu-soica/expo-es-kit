@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Production-readiness audit of an Expo / React Native app — performance, startup speed, bundle size, caching, MMKV, secure storage, client security, auth & sessions, backend security (Supabase RLS or API on Vercel/Edge/Expo API routes), dependencies, SDK/OTA updates, release readiness, agent instructions and HeroUI Native. Outputs a 0–10 scored table with suggestions per category, a GO/NO-GO verdict and trend vs the previous audit. Use when the user asks to audit, review, check or score an Expo/React Native app, asks \"is my app production ready\", or wants a deep/multi-agent audit."
+description: "Production-readiness audit of an Expo / React Native app: performance, startup, bundle, caching, MMKV, secure storage, client security, auth & sessions, backend (Supabase RLS or API), dependencies, SDK/OTA updates, release readiness, agent instructions and HeroUI Native. 0–10 scores per category, GO/NO-GO verdict, trend. Use to audit, review or score an Expo app, \"is my app production ready\", or a deep multi-agent audit."
 argument-hint: "[appPath] [--quick|--deep] [--api=<apiRepoPath>] [--only=perf,mmkv,...] [--out=<report.md>]"
 ---
 
@@ -11,7 +11,7 @@ You produce an evidence-based, scored audit. **You never modify app code during 
 ## 0. Locate the plugin and parse the arguments
 
 - Set `PLUGIN_ROOT` to the plugin root, which is two levels above this SKILL.md (use the base directory shown when the skill loaded).
-- If that path is unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' 2>/dev/null | head -1` and strip `/scripts/scan.mjs`.
+- If that path is unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' 2>/dev/null | head -1` and strip `/scripts/scan.mjs`.
 - Read `PLUGIN_ROOT/shared/contract.md` now. It defines category ids, severities, score caps, verdict rules and the JSON shapes. Follow it exactly.
 
 Arguments (all optional):
@@ -82,7 +82,7 @@ Budget: about 3–8 file reads per category, and more only for P0 suspicions.
 
 ## 2b. Deep mode (multi-agent)
 
-**Launch the specialists in parallel, in a single message.** Use subagent types from this plugin:
+**Launch the specialists in parallel, in a single message.** Use subagent types from this plugin (Claude Code). In Cursor or Codex, use their subagents with the same instructions. If your tool has no subagents, run each agent's instructions from `PLUGIN_ROOT/agents/<name>.md` yourself, one after another — slower, same output.
 
 | Agent | Categories |
 |---|---|
@@ -111,7 +111,7 @@ Previous audit findings for your categories (if any): <ids + titles + status>
 Return exactly one JSON block in the contract's "Agent output" shape.
 ```
 
-If the plugin agent types are not available, use `general-purpose`. Paste the agent file's body (from `PLUGIN_ROOT/agents/<name>.md`) at the top of its prompt.
+If the plugin agent types are not available but generic subagents are (e.g. `general-purpose`), paste the agent file's body (from `PLUGIN_ROOT/agents/<name>.md`) at the top of its prompt.
 
 **Verification pass.**
 
@@ -146,7 +146,7 @@ If the plugin agent types are not available, use `general-purpose`. Paste the ag
    - "What was not checked"
    - the path of the saved report
    - a one-line next step, e.g. `Run /expo-es-kit:fix --only=P0 to fix the blockers (it re-verifies everything at the end).`
-3. If at least 2 audit JSONs exist now, suggest `/expo-es-kit:history` to refresh the trend dashboard and badge. If `updates` scores 6 or lower, suggest `/expo-es-kit:upgrade --plan-only`. If release findings involve privacy, permissions or account deletion, suggest `/expo-es-kit:privacy`. If the `agent-config` score is 7 or lower, also suggest `/expo-es-kit:setup`. If a HeroUI row exists and scores 7 or lower, suggest `/expo-es-kit:heroui setup`.
+3. If at least 2 audit JSONs exist now, suggest `/expo-es-kit:history` to refresh the trend dashboard and badge. If `updates` scores 6 or lower, suggest `/expo-es-kit:upgrade --plan-only`. If release findings involve privacy, permissions or account deletion, suggest `/expo-es-kit:privacy`. If any of `secure-storage`, `client-security`, `auth-sessions` or `backend` scores below 8, suggest `/expo-es-kit:security` for the in-depth security audit (injection tracing, access matrix, OWASP coverage). If the `agent-config` score is 7 or lower, also suggest `/expo-es-kit:setup`. If a HeroUI row exists and scores 7 or lower, suggest `/expo-es-kit:heroui setup`.
 
 ## Rules
 

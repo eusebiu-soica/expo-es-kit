@@ -1,0 +1,20 @@
+{
+  "name": "expo-es-kit",
+  "owner": {
+    "name": "eusebiu-soica",
+    "url": "https://github.com/eusebiu-soica"
+  },
+  "metadata": {
+    "description": "Production-readiness and security toolkit for Expo / React Native apps",
+    "version": "0.3.0"
+  },
+  "plugins": [
+    {
+      "name": "expo-es-kit",
+      "source": "./",
+      "description": "Scored audits, in-depth security audit, verified fixes, agent rules, backend security, privacy forms, SDK upgrades and audit history for Expo apps.",
+      "version": "0.3.0",
+      "category": "Developer Tools"
+    }
+  ]
+}

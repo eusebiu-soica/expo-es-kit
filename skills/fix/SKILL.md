@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Apply the findings of an expo-es-kit audit to an Expo / React Native app in priority order (P0 first), then run a mandatory end-to-end verification — typecheck, lint, tests, expo-doctor, per-finding verification by an independent agent, regression scan and re-audit of the touched categories — and report before/after scores. Use when the user says \"fix the audit\", \"apply the fixes\", \"fix P0\", or after /expo-es-kit:audit."
+description: "Apply the findings of an expo-es-kit audit or security audit to an Expo / React Native app in priority order (P0 first), then run a mandatory end-to-end verification — typecheck, lint, tests, expo-doctor, per-finding verification by an independent agent, regression scan and re-audit of the touched categories — and report before/after scores. Use when the user says \"fix the audit\", \"apply the fixes\", \"fix P0\", or after /expo-es-kit:audit."
 argument-hint: "[report.json] [--only=P0|P0,P1|<finding ids>|<category ids>] [--yes]"
 ---
 
@@ -10,12 +10,13 @@ You turn audit findings into verified code changes. **You are not done until the
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, use `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, use `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - Read `PLUGIN_ROOT/shared/contract.md`.
 - Find the report:
   - Use the argument if given.
-  - Otherwise use the newest `docs/audits/expo-audit-*.json` in the app root.
-  - If there is none, say so and offer to run `/expo-es-kit:audit` first. Don't guess the findings.
+  - Otherwise use the newest report in `docs/audits/` among `expo-audit-*.json` and `security-audit-*.json`. If both exist from different dates, ask which one to fix.
+  - A `security-audit` report keeps findings under `areas[].findings` (each has `category` and `area`); fix them the same way, and re-verify with the security references in `PLUGIN_ROOT/skills/security/references/`.
+  - If there is none, say so and offer to run `/expo-es-kit:audit` or `/expo-es-kit:security` first. Don't guess the findings.
 - Choose the findings to work on:
   - Default: `status: "open"` with severity P0 and P1.
   - `--only` narrows the set by severity, by finding ids, or by category ids.
@@ -103,7 +104,7 @@ Ask once before running the set. Compare the results with the baseline from step
 
 ### 5.2 Independent per-finding verification
 
-Launch `expo-es-kit:finding-verifier` in `fix` mode for every finding you marked `fixed` or `partial`. Use batches of 12 or fewer, run up to 3 in parallel, and launch them in one message. If the plugin agent type is unavailable, use `general-purpose` with the agent body from `PLUGIN_ROOT/agents/finding-verifier.md`.
+Launch `expo-es-kit:finding-verifier` in `fix` mode for every finding you marked `fixed` or `partial`. Use batches of 12 or fewer, run up to 3 in parallel, and launch them in one message. If the plugin agent type is unavailable, use `general-purpose` with the agent body from `PLUGIN_ROOT/agents/finding-verifier.md`. If your tool has no subagents, run the verifier instructions yourself for each finding, re-reading the code fresh — and say in the report that verification was not independent.
 
 The verifier's verdict overrides yours:
 

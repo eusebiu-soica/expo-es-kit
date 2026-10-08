@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>expo-es-kit · Production-ready Expo apps with Claude Code</title>
-<meta name="description" content="A Claude Code plugin that audits, fixes and guards Expo & React Native apps: scored multi-agent audits, verified fixes, per-folder agent rules, backend & auth security, store privacy forms and safe SDK upgrades.">
+<meta name="description" content="A plugin for Claude Code, Codex and Cursor that audits, secures and fixes Expo & React Native apps: scored multi-agent audits, an in-depth security audit (injection, IDOR, secrets, OWASP), verified fixes, agent rules, store privacy forms and safe SDK upgrades.">
 <meta name="theme-color" content="#0a0b0f">
 <link rel="canonical" href="https://expo-es-kit.eusebiusoica.com/">
 <meta property="og:type" content="website">
@@ -91,6 +91,7 @@ img,svg{display:block}
 :root[data-theme="dark"] .theme-icon-dark{display:block} :root[data-theme="dark"] .theme-icon-light{display:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme-icon-dark{display:block}:root:not([data-theme="light"]) .theme-icon-light{display:none}}
 @media (max-width:860px){.nav-links{display:none}.nav-actions{margin-left:auto}}
+@media (max-width:359px){.brand small{display:none}}
 
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:12px;font:600 15px "Geist",sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s;white-space:nowrap}
@@ -186,8 +187,10 @@ h2{font-size:clamp(30px,3.8vw,44px);line-height:1.1;letter-spacing:-.03em;margin
 .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
 .ic.v{background:var(--violet-soft);color:var(--violet)} .ic.g{background:var(--good-soft);color:var(--good)}
 .ic svg{width:20px;height:20px}
-.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}
-@media (max-width:980px){.bento{grid-template-columns:repeat(2,1fr)}.c2,.c3,.c4{grid-column:span 1}.c-wide{grid-column:span 2}}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c6{grid-column:span 6}
+.sec-card{background:linear-gradient(135deg,var(--accent-soft),transparent 55%),var(--surface)}
+.new-tag{font:600 10px "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:3px}
+@media (max-width:980px){.bento{grid-template-columns:repeat(2,1fr)}.c2,.c3,.c4,.c6{grid-column:span 1}.c-wide{grid-column:span 2}}
 @media (max-width:600px){.bento{grid-template-columns:1fr}.c-wide{grid-column:span 1}}
 .mini-scores{display:grid;gap:8px;margin-top:20px}
 .ms{display:grid;grid-template-columns:120px minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:13px;color:var(--text-2)}
@@ -280,6 +283,19 @@ td.num{font-family:"Geist Mono",monospace}
 .gate.info{background:var(--warn-soft);color:var(--warn)}
 .gate svg{width:13px;height:13px}
 
+/* security trace */
+.trace{padding:18px 20px;display:grid;gap:8px;border-bottom:1px solid var(--border)}
+.hop{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 10px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);position:relative}
+.hop + .hop::before{content:"";position:absolute;left:37px;top:-9px;height:9px;border-left:2px dashed var(--border-strong)}
+.hop .k{font:600 10.5px "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);grid-row:span 2}
+.hop code{font-size:12.5px;overflow-wrap:anywhere}
+.hop small{font:12px "Geist Mono",monospace;color:var(--muted)}
+.hop.bad{border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:var(--bad-soft)}
+.verdict-line{font-size:13.5px;color:var(--text-2);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-top:4px}
+.verdict-line code{font-size:12px;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px;border-radius:5px}
+.area-scores{display:grid;gap:8px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.area-scores .ms{grid-template-columns:110px minmax(0,1fr) 34px}
+
 /* guard */
 .code{border-radius:16px;background:var(--term-bg);border:1px solid var(--term-border);overflow:hidden;box-shadow:var(--shadow)}
 .code pre{margin:0;padding:18px 20px;color:var(--term-text);font-size:13px;line-height:1.7;overflow-x:auto}
@@ -320,6 +336,12 @@ td.num{font-family:"Geist Mono",monospace}
 .istep .n{font:600 12px "Geist Mono",monospace;color:var(--accent)}
 .istep h3{margin:0;font-size:18px}
 .istep p{margin:0;color:var(--text-2);font-size:14.5px}
+.tool-tabs{display:flex;gap:4px;padding:4px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);width:max-content;max-width:100%}
+.tool-tabs button{all:unset;cursor:pointer;font:500 13px "Geist",sans-serif;color:var(--text-2);padding:6px 12px;border-radius:8px;white-space:nowrap}
+.tool-tabs button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.tool-tabs button:focus-visible{outline:2px solid var(--accent)}
+.snippet[hidden]{display:none}
+.snippet .t-dim{color:var(--term-muted)}
 .snippet{margin-top:auto;border-radius:12px;background:var(--term-bg);border:1px solid var(--term-border);color:var(--term-text);overflow:hidden}
 .snippet-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 6px 6px 14px;border-bottom:1px solid var(--term-border);font:500 11.5px "Geist Mono",monospace;color:var(--term-muted)}
 .snippet pre{margin:0;padding:12px 14px;font:12.5px/1.75 "Geist Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -390,10 +412,11 @@ html.js .reveal.in{opacity:1;transform:none}
   <div class="wrap">
     <a class="brand" href="#top" aria-label="expo-es-kit home">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 4 6.5v8.7C4 22.6 9.1 28.4 16 30c6.9-1.6 12-7.4 12-14.8V6.5L16 2Z" fill="var(--accent)"/><path d="m11 16.2 3.4 3.4L21.5 12" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      expo-es-kit <small>v0.2.0</small>
+      expo-es-kit <small>v0.3.0</small>
     </a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#features">Features</a>
+      <a href="#security">Security</a>
       <a href="#how">How it works</a>
       <a href="#commands">Commands</a>
       <a href="#install">Install</a>
@@ -414,9 +437,9 @@ html.js .reveal.in{opacity:1;transform:none}
 <section class="hero">
   <div class="wrap">
     <div>
-      <a class="pill" href="https://github.com/eusebiu-soica/expo-es-kit/blob/main/CHANGELOG.md"><b>NEW</b> v0.2.0 · store privacy forms, SDK upgrades, audit history</a>
+      <a class="pill" href="https://github.com/eusebiu-soica/expo-es-kit/blob/main/CHANGELOG.md"><b>NEW</b> v0.3.0 · security audit · now for Codex &amp; Cursor</a>
       <h1>Ship Expo apps that are <span class="grad">fast, secure and <span style="white-space:nowrap">store-ready.</span></span></h1>
-      <p class="lead">A Claude Code plugin that audits your Expo &amp; React Native app with a team of specialist agents, scores it 0–10 across 13 categories, fixes what it finds and proves the fixes work.</p>
+      <p class="lead">A plugin for Claude Code, Codex and Cursor that audits your Expo &amp; React Native app with a team of specialist agents, scores it 0–10, hunts security holes from every input to the database, fixes what it finds and proves the fixes work.</p>
       <div class="cta">
         <a class="btn btn-primary" href="#install">Get started <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="btn btn-ghost" href="https://github.com/eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-gh"/></svg> Star on GitHub</a>
@@ -429,6 +452,7 @@ html.js .reveal.in{opacity:1;transform:none}
         <span><svg aria-hidden="true"><use href="#i-check"/></svg>MIT licensed</span>
         <span><svg aria-hidden="true"><use href="#i-check"/></svg>Zero-dependency local scanner</span>
         <span><svg aria-hidden="true"><use href="#i-check"/></svg>Never prints your secrets</span>
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>Claude Code · Codex · Cursor</span>
       </div>
     </div>
 
@@ -505,7 +529,7 @@ html.js .reveal.in{opacity:1;transform:none}
     <div class="head center reveal">
       <p class="eyebrow">Features</p>
       <h2>Everything between “it runs” and “it ships”</h2>
-      <p class="sub">Nine skills, nine agents and a real-time guard, all working from one shared scoring contract.</p>
+      <p class="sub">Ten skills, twelve agents and a real-time guard, all working from one shared scoring contract.</p>
     </div>
     <div class="bento">
       <article class="card c4 c-wide reveal">
@@ -517,6 +541,12 @@ html.js .reveal.in{opacity:1;transform:none}
           <div class="ms"><span>Auth &amp; sessions</span><span class="bar"><b style="width:70%;background:var(--warn)"></b></span><em>7.0</em></div>
           <div class="ms"><span>Release</span><span class="bar"><b style="width:30%;background:var(--bad)"></b></span><em>3.0</em></div>
         </div>
+      </article>
+      <article class="card c6 c-wide reveal sec-card">
+        <div class="ic"><svg aria-hidden="true"><use href="#i-shield"/></svg></div>
+        <h3>In-depth security audit <span class="new-tag">new</span></h3>
+        <p>Secrets in code, bundle and git history. SQL and PostgREST injection traced from every input to its sink. Passwords, emails and tokens in URLs. Who can read whose data, from RLS predicates to API routes. Scored per area, with an OWASP Mobile and API Top 10 matrix.</p>
+        <div class="chips"><span class="chip">input → sink tracing</span><span class="chip">access matrix</span><span class="chip">RLS predicates</span><span class="chip">git history secrets</span><span class="chip">OWASP 2024 / 2023</span><span class="chip">safe probes</span></div>
       </article>
       <article class="card c2 reveal">
         <div class="ic v"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 19c0-3 2.2-5 5-5s5 2 5 5m-1.5-4.6A5 5 0 0 1 16 14c2.8 0 5 2 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
@@ -653,17 +683,51 @@ html.js .reveal.in{opacity:1;transform:none}
   </div>
 </section>
 
+<!-- ================= SECURITY ================= -->
+<section id="security">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="eyebrow">Security audit</p>
+      <h2>Follows every input to the database.</h2>
+      <p class="sub">Pattern matching finds suspicious lines. <code class="nw">/expo-es-kit:security</code> traces each text field through hooks, the API client and the route handler to the query it ends up in, and checks who can read whose data.</p>
+      <ol class="steps">
+        <li><span><b>Map.</b> A local scan finds input surfaces, parses every RLS policy, inventories URL parameters and checks git history.</span></li>
+        <li><span><b>Trace.</b> Specialists follow inputs to sinks and build the access matrix, then a verifier tries to disprove each finding.</span></li>
+        <li><span><b>Prove.</b> Optional probes with two test accounts, only on localhost or preview, never production.</span></li>
+      </ol>
+    </div>
+    <div class="report reveal" aria-label="Example security audit">
+      <div class="report-head">Security audit <small>security-audit-2026-10-08.md</small></div>
+      <div class="trace" aria-label="Example input to sink trace">
+        <div class="hop"><span class="k">input</span><code>Search</code><small>app/search.tsx:41</small></div>
+        <div class="hop"><span class="k">hook</span><code>useSearch(q)</code><small>hooks/use-search.ts:9</small></div>
+        <div class="hop bad"><span class="k">sink</span><code>.or(`name.ilike.%${q}%`)</code><small>lib/search.ts:12</small></div>
+        <div class="verdict-line"><span class="sev p1">P1</span> INJ-001 · filter string built from user input · use <code>.ilike()</code> with the value as an argument</div>
+      </div>
+      <div class="area-scores">
+        <div class="ms"><span>Secrets</span><span class="bar"><b style="width:90%;background:var(--good)"></b></span><em>9.0</em></div>
+        <div class="ms"><span>Access control</span><span class="bar"><b style="width:40%;background:var(--bad)"></b></span><em>4.0</em></div>
+        <div class="ms"><span>Injection</span><span class="bar"><b style="width:65%;background:var(--warn)"></b></span><em>6.5</em></div>
+        <div class="ms"><span>URL exposure</span><span class="bar"><b style="width:70%;background:var(--warn)"></b></span><em>7.0</em></div>
+        <div class="ms"><span>API hardening</span><span class="bar"><b style="width:80%;background:var(--good)"></b></span><em>8.0</em></div>
+      </div>
+      <div class="gates"><span class="gate info">OWASP M1–M10 · API1–API10 matrix</span><span class="gate info">access matrix</span><span class="gate info">NO-GO: ACL-002</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= COMMANDS ================= -->
 <section id="commands">
   <div class="wrap">
     <div class="head reveal">
       <p class="eyebrow">Commands</p>
-      <h2>Nine skills. Ask in plain words or by name.</h2>
+      <h2>Ten skills. Ask in plain words or by name.</h2>
       <p class="sub">“Audit my app before release”, “is my API secure?”, “set up CLAUDE.md files” all work. Every command that writes shows a plan and diffs first, and never overwrites your files.</p>
     </div>
     <div class="cmd-wrap reveal">
       <div class="tabs" role="tablist" aria-label="Commands">
         <button class="tab" role="tab" id="t-audit" aria-controls="p-audit" aria-selected="true"><span class="dot"></span>audit</button>
+        <button class="tab" role="tab" id="t-security" aria-controls="p-security" aria-selected="false" tabindex="-1"><span class="dot"></span>security</button>
         <button class="tab" role="tab" id="t-fix" aria-controls="p-fix" aria-selected="false" tabindex="-1"><span class="dot"></span>fix</button>
         <button class="tab" role="tab" id="t-setup" aria-controls="p-setup" aria-selected="false" tabindex="-1"><span class="dot"></span>setup</button>
         <button class="tab" role="tab" id="t-backend" aria-controls="p-backend" aria-selected="false" tabindex="-1"><span class="dot"></span>backend</button>
@@ -684,6 +748,20 @@ html.js .reveal.in{opacity:1;transform:none}
             <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><b>Deep</b>: 8 specialists in parallel, then a verifier. Use it before releases.</span></li>
             <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><code>--api=../my-api</code> also audits a separate backend repo, e.g. a Next.js project on Vercel.</span></li>
             <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Saves <code>docs/audits/expo-audit-YYYY-MM-DD.md</code> + <code>.json</code>. The report follows your language.</span></li>
+          </ul>
+          <div class="writes">Writes code: <b>never, report only</b></div>
+        </div>
+
+        <div class="cmd" role="tabpanel" id="p-security" aria-labelledby="t-security" hidden>
+          <h3>Security</h3>
+          <p class="tagline">In-depth security audit of the app, its API and the database. Read-only.</p>
+          <pre class="usage"><span class="t-acc">/expo-es-kit:security</span> [appPath] [--api=&lt;path&gt;] [--quick | --deep] [--history] [--probe]</pre>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Secrets in code, the bundle, env and CI, plus <b>git history</b> with <code>--history</code>.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>SQL and PostgREST injection <b>traced from every input to its sink</b>, plus XSS, SSRF, shell and path injection.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Passwords, emails and tokens in URLs and deep links; open redirects.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Access matrix: IDOR, mass assignment, RLS predicates, client-callable <code>security definer</code> RPCs.</span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>OWASP Mobile Top 10 (2024) and API Top 10 (2023) matrix. Optional probes on localhost or preview only.</span></li>
           </ul>
           <div class="writes">Writes code: <b>never, report only</b></div>
         </div>
@@ -884,6 +962,8 @@ html.js .reveal.in{opacity:1;transform:none}
             <tr><td>Store privacy forms from code evidence</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
             <tr><td>SDK upgrade with gates per step</td><td class="y">✓</td><td class="n">✕</td><td class="y">✓</td></tr>
             <tr><td>Score history + badge</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Input → sink injection tracing, access matrix, OWASP matrix</td><td class="n">✕</td><td class="n">✕</td><td class="y">✓</td></tr>
+            <tr><td>Claude Code, Codex and Cursor</td><td class="n">–</td><td class="n">–</td><td class="y">✓</td></tr>
           </tbody>
         </table>
       </div>
@@ -918,6 +998,7 @@ html.js .reveal.in{opacity:1;transform:none}
         <h3>Before a release</h3><p>Go deep, then prove it.</p>
         <ol>
           <li>/expo-es-kit:audit --deep --api=../my-api</li>
+          <li>/expo-es-kit:security --deep --history<span>secrets, injection, access control</span></li>
           <li>/expo-es-kit:fix --only=P0,P1</li>
           <li>/expo-es-kit:privacy<span>store answers + manifest</span></li>
           <li>/expo-es-kit:history<span>dashboard + badge</span></li>
@@ -940,25 +1021,34 @@ html.js .reveal.in{opacity:1;transform:none}
     <div class="head center reveal">
       <p class="eyebrow">Install</p>
       <h2>Up and running in a minute</h2>
-      <p class="sub">Run these inside Claude Code. Restart it if the commands don't appear, then check <code>/plugin</code>.</p>
+      <p class="sub">Pick your tool. In Claude Code, restart if the commands don't appear, then check <code>/plugin</code>. In Codex and Cursor you can also just ask in plain words.</p>
     </div>
     <div class="install">
       <div class="istep reveal">
-        <span class="n">STEP 1</span><h3>Add the marketplace</h3><p>Install the plugin from GitHub.</p>
-        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy install commands" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit&#10;/plugin install expo-es-kit@expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
+        <span class="n">STEP 1</span><h3>Install the plugin</h3>
+        <div class="tool-tabs" role="tablist" aria-label="Choose your tool">
+          <button type="button" role="tab" aria-selected="true" data-tool="claude">Claude Code</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="codex">Codex</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="cursor">Cursor</button>
+        </div>
+        <div class="snippet" data-tool-panel="claude"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy Claude Code install commands" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit&#10;/plugin install expo-es-kit@expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
 /plugin install <span class="nw">expo-es-kit@expo-es-kit</span></pre></div>
+        <div class="snippet" data-tool-panel="codex" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy Codex install command" data-copy="codex plugin marketplace add eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>codex plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
+<span class="t-dim"># then install expo-es-kit from the plugin list</span></pre></div>
+        <div class="snippet" data-tool-panel="cursor" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy Cursor install command" data-copy="git clone https://github.com/eusebiu-soica/expo-es-kit ~/.cursor/plugins/local/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>git clone <span class="nw">https://github.com/eusebiu-soica/expo-es-kit</span> <span class="nw">~/.cursor/plugins/local/expo-es-kit</span>
+<span class="t-dim"># or add the repo as a plugin marketplace</span></pre></div>
       </div>
       <div class="istep reveal">
-        <span class="n">STEP 2</span><h3>Run your first audit</h3><p>From your Expo app's folder.</p>
+        <span class="n">STEP 2</span><h3>Run your first audit</h3><p>From your Expo app's folder. Elsewhere, ask: “audit my app”.</p>
         <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy audit command" data-copy="/expo-es-kit:audit --quick"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:audit --quick</pre></div>
       </div>
       <div class="istep reveal">
-        <span class="n">STEP 3</span><h3>Fix the blockers</h3><p>Then watch the trend go up.</p>
+        <span class="n">STEP 3</span><h3>Fix the blockers</h3><p>Then watch the trend go up, and run <code>security</code> before release.</p>
         <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy fix command" data-copy="/expo-es-kit:fix --only=P0"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:fix --only=P0</pre></div>
       </div>
     </div>
     <div class="req reveal">
-      <span><b>Claude Code</b> with plugin support</span>
+      <span><b>Claude Code</b>, <b>Codex</b> or <b>Cursor</b></span>
       <span><b>Node.js</b> 18+</span>
       <span><b>Expo</b> app, tested on SDK 54+</span>
       <span>Optional: <b>git</b>, <b>Supabase MCP</b></span>
@@ -992,6 +1082,8 @@ html.js .reveal.in{opacity:1;transform:none}
       <h2>Questions, answered</h2>
     </div>
     <div class="faq reveal">
+      <details><summary>Does it work in Codex or Cursor?</summary><p>Yes. The same repository ships manifests for Claude Code, Codex and Cursor, and the skills use the open Agent Skills format. Deep modes use subagents where the tool has them and otherwise run the auditors one after another. The guard hook works in all three; Codex asks you to trust it first.</p></details>
+      <details><summary>Audit or security: which one?</summary><p><code>audit</code> answers “is the app production-ready?” across 13 categories. <code>security</code> goes deep on one question: can someone steal data, secrets or access? Run both before a release.</p></details>
       <details><summary>Quick or deep: which should I run?</summary><p><b>Quick</b> is a single agent. It is cheap, takes about 5–15 minutes and suits weekly checks; its findings are not independently verified. <b>Deep</b> runs 8 specialists plus a verifier. It is thorough but uses many more tokens, so run it before releases or after big changes.</p></details>
       <details><summary>Does it work without Supabase, HeroUI or MMKV?</summary><p>Yes. Categories adapt to what is installed and become n/a when they don't apply. The MMKV category, for example, scores whether your app would need it.</p></details>
       <details><summary>My backend lives in another repo.</summary><p>Pass it with <code>--api=../my-api</code> on <code>audit</code>, <code>setup</code> or <code>backend</code>. Without it, the kit notices sibling folders that look like an API and asks whether to include them.</p></details>
@@ -1075,7 +1167,7 @@ html.js .reveal.in{opacity:1;transform:none}
   });
 
   // tabs
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tabs [role="tab"]'));
   function select(tab){
     tabs.forEach(function(t){
       var on = t === tab;
@@ -1089,6 +1181,20 @@ html.js .reveal.in{opacity:1;transform:none}
       var d = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1 : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;
       if (!d) return; e.preventDefault();
       var n = tabs[(i + d + tabs.length) % tabs.length]; select(n); n.focus();
+    });
+  });
+
+  // install: tool switcher
+  var toolTabs = Array.prototype.slice.call(document.querySelectorAll('.tool-tabs [role="tab"]'));
+  function pickTool(btn){
+    toolTabs.forEach(function(b){ var on = b === btn; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    document.querySelectorAll('[data-tool-panel]').forEach(function(p){ p.hidden = p.getAttribute('data-tool-panel') !== btn.getAttribute('data-tool'); });
+  }
+  toolTabs.forEach(function(b, i){
+    b.addEventListener('click', function(){ pickTool(b); });
+    b.addEventListener('keydown', function(e){
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; e.preventDefault();
+      var n = toolTabs[(i + d + toolTabs.length) % toolTabs.length]; pickTool(n); n.focus();
     });
   });
 
