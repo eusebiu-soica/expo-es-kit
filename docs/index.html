@@ -298,10 +298,11 @@ td.num{font-family:"Geist Mono",monospace}
 
 /* guard */
 .code{border-radius:16px;background:var(--term-bg);border:1px solid var(--term-border);overflow:hidden;box-shadow:var(--shadow)}
-.code pre{margin:0;padding:18px 20px;color:var(--term-text);font-size:13px;line-height:1.7;overflow-x:auto}
+.code pre{margin:0;padding:18px 20px;color:var(--term-text);font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
 .code .k{color:#c4b5fd}.code .s{color:#86efac}.code .c{color:#6b7280}.code .f{color:#93c5fd}
-.code .hl{display:inline-block;width:100%;background:rgba(248,113,113,.10);box-shadow:inset 3px 0 0 #f87171}
-.warn-box{margin:0 16px 16px;padding:14px 16px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28);color:#fde68a;font:13px/1.6 "Geist Mono",monospace}
+@media (max-width:520px){.code pre{font-size:11.5px;padding:16px 14px}}
+.code .hl{display:inline-block;width:100%;vertical-align:top;background:rgba(248,113,113,.10);box-shadow:inset 3px 0 0 #f87171}
+.warn-box{margin:4px 16px 16px;padding:14px 16px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28);color:#fde68a;font:13px/1.6 "Geist Mono",monospace}
 .warn-box b{color:#fbbf24}
 .catch{display:grid;gap:8px;margin-top:24px}
 .catch div{min-width:0;overflow-wrap:anywhere;display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:14px;color:var(--text-2)}
@@ -337,6 +338,7 @@ td.num{font-family:"Geist Mono",monospace}
 .istep h3{margin:0;font-size:18px}
 .istep p{margin:0;color:var(--text-2);font-size:14.5px}
 .tool-tabs{display:flex;gap:4px;padding:4px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);width:max-content;max-width:100%}
+.tool-tabs-center{margin:0 auto 24px}
 .tool-tabs button{all:unset;cursor:pointer;font:500 13px "Geist",sans-serif;color:var(--text-2);padding:6px 12px;border-radius:8px;white-space:nowrap}
 .tool-tabs button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
 .tool-tabs button:focus-visible{outline:2px solid var(--accent)}
@@ -460,7 +462,7 @@ html.js .reveal.in{opacity:1;transform:none}
       <div class="term-bar"><i></i><i></i><i></i><span>~/my-app — claude</span></div>
       <div class="term-body" id="term">
         <div class="t-line"><span class="t-acc">&gt;</span> /expo-es-kit:audit --deep --api=../my-api</div>
-        <div class="t-line t-hide"><span class="t-good">●</span> scan.mjs <span class="t-dim">· 1,284 files · 122 rules · 2.1s</span></div>
+        <div class="t-line t-hide"><span class="t-good">●</span> scan.mjs <span class="t-dim">· 1,284 files · 141 rules · 2.1s</span></div>
         <div class="t-line t-hide"><span class="t-vio">●</span> 8 specialist auditors running in parallel<span class="t-dim">…</span></div>
         <div class="t-line t-hide"><span class="t-vio">●</span> finding-verifier <span class="t-dim">· 14 ok · 3 down · 5 rejected</span></div>
         <div class="t-verdict t-hide">
@@ -916,10 +918,12 @@ html.js .reveal.in{opacity:1;transform:none}
   <div class="wrap split">
     <div class="code reveal" aria-label="Example guard hook warning">
       <div class="term-bar"><i></i><i></i><i></i><span>lib/auth/session.ts</span></div>
-<pre><span class="k">import</span> AsyncStorage <span class="k">from</span> <span class="s">'@react-native-async-storage/async-storage'</span>;
+<pre><span class="k">import</span> AsyncStorage <span class="k">from</span>
+<span class="s">'@react-native-async-storage/async-storage'</span>;
 
-<span class="k">export async function</span> <span class="f">saveSession</span>(session) {
-<span class="hl">  <span class="k">await</span> AsyncStorage.<span class="f">setItem</span>(<span class="s">'access_token'</span>, session.access_token);</span>
+<span class="k">export async function</span> <span class="f">saveSession</span>(s) {
+<span class="hl">  <span class="k">await</span> AsyncStorage.<span class="f">setItem</span>(</span>
+<span class="hl">    <span class="s">'access_token'</span>, s.access_token);</span>
 }</pre>
       <div class="warn-box"><b>⚠ expo-es-kit guard · P0</b><br>Token written to AsyncStorage (unencrypted). Store session tokens in expo-secure-store.</div>
     </div>
@@ -1023,28 +1027,32 @@ html.js .reveal.in{opacity:1;transform:none}
       <h2>Up and running in a minute</h2>
       <p class="sub">Pick your tool. In Claude Code, restart if the commands don't appear, then check <code>/plugin</code>. In Codex and Cursor you can also just ask in plain words.</p>
     </div>
+    <div class="tool-tabs tool-tabs-center reveal" role="tablist" aria-label="Choose your tool">
+      <button type="button" role="tab" aria-selected="true" data-tool="claude">Claude Code</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="codex">Codex</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="cursor">Cursor</button>
+    </div>
     <div class="install">
       <div class="istep reveal">
-        <span class="n">STEP 1</span><h3>Install the plugin</h3>
-        <div class="tool-tabs" role="tablist" aria-label="Choose your tool">
-          <button type="button" role="tab" aria-selected="true" data-tool="claude">Claude Code</button>
-          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="codex">Codex</button>
-          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tool="cursor">Cursor</button>
-        </div>
-        <div class="snippet" data-tool-panel="claude"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy Claude Code install commands" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit&#10;/plugin install expo-es-kit@expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
+        <span class="n">STEP 1</span><h3>Install the plugin</h3><p>Once per machine.</p>
+        <div class="snippet" data-tool-panel="claude"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy" data-copy="/plugin marketplace add eusebiu-soica/expo-es-kit&#10;/plugin install expo-es-kit@expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
 /plugin install <span class="nw">expo-es-kit@expo-es-kit</span></pre></div>
-        <div class="snippet" data-tool-panel="codex" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy Codex install command" data-copy="codex plugin marketplace add eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>codex plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
+        <div class="snippet" data-tool-panel="codex" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy" data-copy="codex plugin marketplace add eusebiu-soica/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>codex plugin marketplace add <span class="nw">eusebiu-soica/expo-es-kit</span>
 <span class="t-dim"># then install expo-es-kit from the plugin list</span></pre></div>
-        <div class="snippet" data-tool-panel="cursor" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy Cursor install command" data-copy="git clone https://github.com/eusebiu-soica/expo-es-kit ~/.cursor/plugins/local/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>git clone <span class="nw">https://github.com/eusebiu-soica/expo-es-kit</span> <span class="nw">~/.cursor/plugins/local/expo-es-kit</span>
+        <div class="snippet" data-tool-panel="cursor" hidden><div class="snippet-bar"><span>terminal</span><button class="copy" type="button" aria-label="Copy" data-copy="git clone https://github.com/eusebiu-soica/expo-es-kit ~/.cursor/plugins/local/expo-es-kit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>git clone <span class="nw">https://github.com/eusebiu-soica/expo-es-kit</span> <span class="nw">~/.cursor/plugins/local/expo-es-kit</span>
 <span class="t-dim"># or add the repo as a plugin marketplace</span></pre></div>
       </div>
       <div class="istep reveal">
-        <span class="n">STEP 2</span><h3>Run your first audit</h3><p>From your Expo app's folder. Elsewhere, ask: “audit my app”.</p>
-        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy audit command" data-copy="/expo-es-kit:audit --quick"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:audit --quick</pre></div>
+        <span class="n">STEP 2</span><h3>Run your first audit</h3><p>From your Expo app's folder.</p>
+        <div class="snippet" data-tool-panel="claude"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy" data-copy="/expo-es-kit:audit --quick"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:audit --quick</pre></div>
+        <div class="snippet" data-tool-panel="codex" hidden><div class="snippet-bar"><span>codex prompt</span><button class="copy" type="button" aria-label="Copy" data-copy="Run a quick expo-es-kit audit of this app"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>Run a quick expo-es-kit audit of this app</pre></div>
+        <div class="snippet" data-tool-panel="cursor" hidden><div class="snippet-bar"><span>cursor chat</span><button class="copy" type="button" aria-label="Copy" data-copy="Run a quick expo-es-kit audit of this app"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>Run a quick expo-es-kit audit of this app</pre></div>
       </div>
       <div class="istep reveal">
         <span class="n">STEP 3</span><h3>Fix the blockers</h3><p>Then watch the trend go up, and run <code>security</code> before release.</p>
-        <div class="snippet"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy fix command" data-copy="/expo-es-kit:fix --only=P0"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:fix --only=P0</pre></div>
+        <div class="snippet" data-tool-panel="claude"><div class="snippet-bar"><span>claude code</span><button class="copy" type="button" aria-label="Copy" data-copy="/expo-es-kit:fix --only=P0"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>/expo-es-kit:fix --only=P0</pre></div>
+        <div class="snippet" data-tool-panel="codex" hidden><div class="snippet-bar"><span>codex prompt</span><button class="copy" type="button" aria-label="Copy" data-copy="Fix the P0 findings from the last expo-es-kit audit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>Fix the P0 findings from the last expo-es-kit audit</pre></div>
+        <div class="snippet" data-tool-panel="cursor" hidden><div class="snippet-bar"><span>cursor chat</span><button class="copy" type="button" aria-label="Copy" data-copy="Fix the P0 findings from the last expo-es-kit audit"><svg aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span></button></div><pre>Fix the P0 findings from the last expo-es-kit audit</pre></div>
       </div>
     </div>
     <div class="req reveal">
@@ -1190,8 +1198,9 @@ html.js .reveal.in{opacity:1;transform:none}
     toolTabs.forEach(function(b){ var on = b === btn; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     document.querySelectorAll('[data-tool-panel]').forEach(function(p){ p.hidden = p.getAttribute('data-tool-panel') !== btn.getAttribute('data-tool'); });
   }
+  try { var savedTool = localStorage.getItem('eek-tool'); var sb = toolTabs.filter(function(b){ return b.getAttribute('data-tool') === savedTool; })[0]; if (sb) pickTool(sb); } catch (e) {}
   toolTabs.forEach(function(b, i){
-    b.addEventListener('click', function(){ pickTool(b); });
+    b.addEventListener('click', function(){ pickTool(b); try { localStorage.setItem('eek-tool', b.getAttribute('data-tool')); } catch (e) {} });
     b.addEventListener('keydown', function(e){
       var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; e.preventDefault();
       var n = toolTabs[(i + d + toolTabs.length) % toolTabs.length]; pickTool(n); n.focus();
