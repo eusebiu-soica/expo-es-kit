@@ -35,8 +35,12 @@ for (const [k, v] of Object.entries(versions)) if (v !== pj.version) errors.push
 for (const [f, j] of Object.entries(J)) if (j.name && !/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/.test(j.name)) errors.push(`${f}: name must be lowercase kebab-case`);
 // Cursor manifest paths must exist (a set path replaces default discovery).
 const cur = J[".cursor-plugin/plugin.json"] ?? {};
-for (const k of ["skills", "agents", "rules", "commands", "hooks"]) {
-  for (const v of [cur[k]].flat().filter((x) => typeof x === "string")) if (!exists(v)) errors.push(`.cursor-plugin/plugin.json: ${k} path ${v} does not exist`);
+// Cursor submission checklist: paths are relative, no "..", and exist.
+for (const k of ["skills", "agents", "rules", "commands", "hooks", "logo"]) {
+  for (const v of [cur[k]].flat().filter((x) => typeof x === "string")) {
+    if (/^\/|^[a-zA-Z]:|(^|\/)\.\.(\/|$)/.test(v)) errors.push(`.cursor-plugin/plugin.json: ${k} path ${v} must be relative, without ".."`);
+    else if (!exists(v)) errors.push(`.cursor-plugin/plugin.json: ${k} path ${v} does not exist`);
+  }
 }
 const cx = J[".codex-plugin/plugin.json"] ?? {};
 if (typeof cx.skills === "string" && !exists(cx.skills)) errors.push(`.codex-plugin/plugin.json: skills path ${cx.skills} does not exist`);

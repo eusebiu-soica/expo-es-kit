@@ -42,6 +42,8 @@
       "Run a security audit of my app and its API",
       "Fix the P0 findings from the last audit"
     ],
-    "brandColor": "#FF7A45"
+    "brandColor": "#FF7A45",
+    "logo": "./assets/logo.svg",
+    "composerIcon": "./assets/logo.svg"
   }
 }
