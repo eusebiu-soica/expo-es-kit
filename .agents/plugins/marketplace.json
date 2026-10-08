@@ -1,0 +1,20 @@
+{
+  "name": "expo-es-kit",
+  "interface": {
+    "displayName": "expo-es-kit"
+  },
+  "plugins": [
+    {
+      "name": "expo-es-kit",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}

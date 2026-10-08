@@ -3,64 +3,124 @@
 // `guard: true` rules also fire in the PostToolUse guard hook, with `message` shown to the agent.
 
 const TSX = (c) => c.ext === ".tsx" || c.ext === ".jsx";
-const notTest = (c) => !/(__tests__|\.test\.|\.spec\.|__mocks__|mocks?\/|\.stories\.)/.test(c.file);
-const notServer = (c) => !/(\+api\.(t|j)sx?$|supabase\/functions\/|app\/api\/|server\/|scripts\/)/.test(c.file);
-const clientCode = (c) => notTest(c) && notServer(c);
+const notTest = (c) => !/(__tests__|\.test\.|\.spec\.|__mocks__|mocks?\/|\.stories\.|(^|\/)e2e\/|(^|\/)test-[^/]*$)/.test(c.file);
+// Dev tooling that never ships (local scripts, seeds, config files).
+const notTooling = (c) => notTest(c) && !/((^|\/)(scripts|tools|seeds?|fixtures)\/|\.config\.(t|j|mj|cj)s$)/.test(c.file);
+const notServer = (c) => !/(\+api\.(t|j)sx?$|supabase\/functions\/|app\/api\/|pages\/api\/|server\/|scripts\/)/.test(c.file);
+// `c.server` is set by security-scan.mjs (true for every file of a separate API repo); otherwise the path decides.
+const isServer = (c) => c.server ?? !notServer(c);
+const clientCode = (c) => notTest(c) && !isServer(c);
+const serverCode = (c) => notTooling(c) && isServer(c);
 const SENSITIVE = /(token|session|auth|password|passwd|secret|jwt|refresh|credential|pin\b|otp)/i;
+// Query-string names that must never carry user data (URLs end up in logs, analytics, referrers, history).
+const PII_PARAM = "password|passwd|pwd|pass|email|e_?mail|phone|phone_?number|cnp|ssn|iban|card|card_?number|cvv|otp|pin|secret|api_?key|apikey|private_?key";
+// Values that come from the request in a server handler.
+const REQ = "(?:req|request|body|params|query|searchParams|input|payload|ctx\\.params|event\\.body)";
 
 export const RULES = [
   // ---------- secure storage / secrets (client) ----------
   {
-    id: "asyncstorage-sensitive", category: "secure-storage", severity: "P0", guard: true, scope: clientCode,
+    id: "asyncstorage-sensitive", category: "secure-storage", area: "secrets", severity: "P0", guard: true, scope: clientCode,
     re: /AsyncStorage\.(setItem|multiSet|mergeItem)\s*\(\s*[^,]*(token|session|auth|password|secret|jwt|refresh|credential)/i,
     message: "Sensitive value written to AsyncStorage (unencrypted). Store tokens/credentials with expo-secure-store (or MMKV encrypted with a SecureStore-held key for bulk data).",
   },
   {
-    id: "mmkv-sensitive-key", category: "secure-storage", severity: "P1", guard: true, scope: clientCode,
+    id: "mmkv-sensitive-key", category: "secure-storage", area: "secrets", severity: "P1", guard: true, scope: clientCode,
     re: /\.(set|setString)\s*\(\s*['"`][^'"`]*(access.?token|refresh.?token|password|secret|jwt)[^'"`]*['"`]/i,
     not: /SecureStore/,
     message: "A credential appears to be written to a key-value store. Unless that MMKV instance is encrypted with a key from expo-secure-store, keep credentials in expo-secure-store only.",
   },
   {
-    id: "service-role-in-client", category: "client-security", severity: "P0", guard: true, scope: clientCode,
+    id: "service-role-in-client", category: "client-security", area: "secrets", severity: "P0", guard: true, scope: clientCode,
     re: /service_role|SERVICE_ROLE|serviceRoleKey|SUPABASE_SERVICE/i,
     message: "Supabase service_role key referenced in app code. It bypasses RLS and anything in the bundle is public. Move this logic to a server (API route / Edge Function).",
   },
   {
-    id: "expo-public-secret", category: "client-security", severity: "P0", guard: true,
+    id: "expo-public-secret", category: "client-security", area: "secrets", severity: "P0", guard: true,
     re: /EXPO_PUBLIC_\w*(SECRET|PRIVATE|SERVICE_ROLE|SERVICE_KEY|PASSWORD|ADMIN|SK_LIVE|SK_TEST|WEBHOOK|SIGNING|CLIENT_SECRET)\w*/i,
     message: "EXPO_PUBLIC_* variables are inlined into the JS bundle and readable by anyone. Never put secrets there; call a server endpoint that holds the secret.",
   },
   {
-    id: "secret-literal", category: "client-security", severity: "P0", guard: true, scope: notTest,
+    id: "secret-literal", category: "client-security", area: "secrets", severity: "P0", guard: true, scope: notTest,
     re: /(sk_live_[0-9a-zA-Z]{10,}|rk_live_[0-9a-zA-Z]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|ghp_[0-9A-Za-z]{30,}|xox[abpr]-[0-9A-Za-z-]{10,}|sk-[A-Za-z0-9_-]{32,}|whsec_[0-9a-zA-Z]{10,}|sb_secret_[0-9A-Za-z_-]{10,})/,
     message: "Hard-coded secret detected. Remove it, rotate it, and load it server-side from an environment variable.",
   },
   {
-    id: "jwt-literal", category: "client-security", severity: "P1", scope: notTest,
+    id: "jwt-literal", category: "client-security", area: "secrets", severity: "P1", scope: notTest,
     re: /['"`]eyJ[A-Za-z0-9_-]{15,}\.eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{10,}['"`]/,
   },
   {
-    id: "log-sensitive", category: "client-security", severity: "P1", guard: true, scope: notTest,
+    id: "log-sensitive", category: "client-security", area: "data-exposure", severity: "P1", guard: true, scope: notTest,
     re: /console\.(log|info|debug|warn|error)\s*\([^)]*\b(access_?token|refresh_?token|session|password|jwt|secret|authorization)\b/i,
     message: "Logging what looks like a token/session/password. Logs end up in device logs and crash reporters; log an id or a boolean instead.",
   },
   {
-    id: "console-log", category: "client-security", severity: "P2", scope: clientCode,
+    id: "console-log", category: "client-security", area: "data-exposure", severity: "P2", scope: clientCode,
     re: /console\.(log|debug|info)\s*\(/,
     not: /__DEV__/,
   },
   {
-    id: "http-cleartext", category: "client-security", severity: "P1", guard: true, scope: notTest,
+    id: "http-cleartext", category: "client-security", area: "platform", severity: "P1", guard: true, scope: notTest,
     re: /['"`]http:\/\/(?!localhost|127\.0\.0\.1|10\.0\.2\.2|0\.0\.0\.0|192\.168\.|10\.\d|schemas\.|www\.w3\.org|\$\{)/,
     message: "Cleartext http:// endpoint. Use https:// (iOS ATS and Android block cleartext by default; it also exposes tokens on the network).",
   },
-  { id: "eval-usage", category: "client-security", severity: "P1", scope: notTest, re: /\beval\s*\(|new Function\s*\(/ },
-  { id: "webview-usage", category: "client-security", severity: "P2", re: /<WebView\b/ },
-  { id: "webview-risky", category: "client-security", severity: "P1", re: /originWhitelist=\{\[\s*['"]\*['"]\s*\]\}|allowUniversalAccessFromFileURLs|mixedContentMode=['"]always['"]|injectedJavaScript(BeforeContentLoaded)?=/ },
-  { id: "deeplink-handler", category: "client-security", severity: "P2", re: /Linking\.(addEventListener|getInitialURL)|useURL\s*\(|useLinkingURL|Linking\.parse\(/ },
-  { id: "math-random-token", category: "client-security", severity: "P1", re: /Math\.random\(\)[^;\n]*(token|nonce|secret|password|otp|code_verifier|state)/i },
-  { id: "dangerously-set-html", category: "client-security", severity: "P2", re: /dangerouslySetInnerHTML/ },
+  { id: "eval-usage", category: "client-security", area: "injection", severity: "P1", scope: notTest, re: /\beval\s*\(|new Function\s*\(/ },
+  { id: "webview-usage", category: "client-security", area: "platform", severity: "P2", re: /<WebView\b/ },
+  { id: "webview-risky", category: "client-security", area: "platform", severity: "P1", re: /originWhitelist=\{\[\s*['"]\*['"]\s*\]\}|allowUniversalAccessFromFileURLs|mixedContentMode=['"]always['"]|injectedJavaScript(BeforeContentLoaded)?=/ },
+  { id: "deeplink-handler", category: "client-security", area: "url-exposure", severity: "P2", re: /Linking\.(addEventListener|getInitialURL)|useURL\s*\(|useLinkingURL|Linking\.parse\(/ },
+  { id: "math-random-token", category: "client-security", area: "auth", severity: "P1", re: /Math\.random\(\)[^;\n]*(token|nonce|secret|password|otp|code_verifier|state)/i },
+  { id: "dangerously-set-html", category: "client-security", area: "injection", severity: "P2", re: /dangerouslySetInnerHTML/ },
+
+  // ---------- security: injection (used by the security skill; also feeds audit) ----------
+  { id: "postgrest-filter-interpolation", category: "backend", area: "injection", severity: "P1", guard: true, scope: notTooling,
+    re: /\.(or|filter|not)\s*\(\s*(`[^`]*\$\{|['"][^'"]*['"]\s*\+)/,
+    message: "PostgREST filter string built from a variable (.or()/.filter() with ${} or +). User input can inject extra conditions (e.g. \",role.eq.admin\"). Use separate .eq()/.ilike() calls with the value as an argument, or allow-list/escape the value (commas, parentheses, quotes) before building the string." },
+  { id: "postgrest-wildcard-interpolation", category: "backend", area: "injection", severity: "P2", scope: notTooling,
+    re: /\.(ilike|like|textSearch)\s*\(\s*['"`][\w.]+['"`]\s*,\s*`[^`]*\$\{/, not: /escape|sanitize/i },
+  { id: "raw-sql-interpolation", category: "backend", area: "injection", severity: "P1", guard: true, scope: notTooling,
+    re: /(\.(query|execute|raw|unsafe)|sql\.raw|knex\.raw)\s*\(\s*(`[^`]*\$\{|['"`]\s*(select|insert|update|delete|with)\b[^'"`]*['"`]\s*\+)/i,
+    message: "SQL built by string interpolation/concatenation. Pass values as bound parameters (pg: query(text, [values]); postgres.js / drizzle / Prisma: tagged templates sql`...${v}` are parameterized; knex: ? bindings). Never interpolate user input into SQL text." },
+  { id: "prisma-raw-unsafe", category: "backend", area: "injection", severity: "P1", guard: true, scope: notTooling,
+    re: /\$(queryRawUnsafe|executeRawUnsafe)\s*\(/,
+    message: "$queryRawUnsafe/$executeRawUnsafe run a raw string. Use the tagged template $queryRaw`...${value}` (parameterized) or Prisma.sql, and never build the string from user input." },
+  { id: "sqlite-interpolation", category: "client-security", area: "injection", severity: "P2", scope: notTest,
+    re: /\.(execAsync|execSync|runAsync|runSync|getAllAsync|getAllSync|getFirstAsync|getFirstSync|executeSql|prepareAsync)\s*\(\s*`[^`]*\$\{/ },
+  { id: "command-injection", category: "backend", area: "injection", severity: "P1", guard: true, scope: serverCode,
+    re: /((?<![\w.])|\b(child_?[pP]rocess|cp)\.)(exec|execSync|spawn|spawnSync|execFile|execFileSync)\s*\(\s*`[^`]*\$\{|Deno\.(run|Command)\s*\([^)]*\$\{/,
+    message: "Shell command built from interpolated values. Use execFile/spawn with an argument array (no shell), and validate/allow-list every argument." },
+  { id: "ssrf-request-url", category: "backend", area: "injection", severity: "P1", scope: serverCode,
+    re: new RegExp(`\\b(fetch|axios\\.(get|post|request)|got|ky)\\s*\\(\\s*(${REQ}[\\w.\\[\\]'"]*\\.(url|href|link|uri|endpoint|callback\\w*|webhook\\w*|image\\w*|src)\\b|searchParams\\.get\\(\\s*['"](url|href|link|uri|src|callback|webhook|image)['"]\\s*\\))`, "i") },
+  { id: "path-traversal", category: "backend", area: "injection", severity: "P1", scope: serverCode,
+    re: new RegExp(`\\b(readFile|readFileSync|createReadStream|writeFile|writeFileSync|unlink|unlinkSync|sendFile|Deno\\.readFile|Deno\\.readTextFile)\\s*\\([^)]*\\b${REQ}\\b`) },
+  { id: "regexp-from-input", category: "backend", area: "injection", severity: "P2", scope: notTooling,
+    re: new RegExp(`new RegExp\\s*\\(\\s*(${REQ}\\b|(search|query|term|filter|q|text|value|keyword)\\s*([,)]|\\?\\?|\\|\\|))`) },
+  { id: "webview-html-interpolation", category: "client-security", area: "injection", severity: "P1", scope: notTest,
+    re: /source=\{\{\s*html\s*:\s*`[^`]*\$\{|injectJavaScript\s*\(\s*`[^`]*\$\{|injectedJavaScript(BeforeContentLoaded)?=\{\s*`[^`]*\$\{/ },
+  { id: "inner-html", category: "client-security", area: "injection", severity: "P2", scope: notTest, re: /\.innerHTML\s*=|\.outerHTML\s*=|insertAdjacentHTML\s*\(/ },
+
+  // ---------- security: sensitive data in URLs / redirects ----------
+  { id: "sensitive-param-in-url", category: "client-security", area: "url-exposure", severity: "P1", guard: true, scope: notTest,
+    re: new RegExp(`[?&](${PII_PARAM})=(\\$\\{|['"\`]\\s*\\+)`, "i"),
+    message: "Personal or secret data placed in a URL query string (password/email/phone/OTP/card…). URLs are stored in logs, analytics, browser/WebView history, referrers and push/deep links. Send it in the request body (POST) or keep it in app state instead." },
+  { id: "route-params-sensitive", category: "client-security", area: "url-exposure", severity: "P1", scope: clientCode,
+    re: new RegExp(`(router\\.(push|replace|navigate|setParams)|<Link\\b|href=\\{)\\s*\\(?\\s*\\{[^}]*params\\s*:\\s*\\{[^}]*\\b(${PII_PARAM}|token|access_token|refresh_token)\\b`, "i") },
+  { id: "search-params-sensitive", category: "client-security", area: "url-exposure", severity: "P2", scope: notTest,
+    re: new RegExp(`(\\{[^}]*\\b(${PII_PARAM}|token|access_token|refresh_token)\\b[^}]*\\}\\s*=\\s*use(Local|Global)SearchParams|searchParams\\.get\\(\\s*['"](${PII_PARAM}|access_token|refresh_token)['"]\\s*\\))`, "i") },
+  { id: "open-redirect", category: "backend", area: "url-exposure", severity: "P1", scope: serverCode,
+    re: /redirect\w*\s*\(\s*(new URL\(\s*)?(searchParams\.get\(\s*['"](next|redirect\w*|return\w*|callback\w*|continue|url|to)['"]\s*\)|(req|request)\.query\.(next|redirect\w*|return\w*|url|to)\b|(body|params|query)\.(next|redirect\w*|returnTo|returnUrl|url)\b)/i },
+  { id: "client-redirect-param", category: "client-security", area: "url-exposure", severity: "P2", scope: clientCode,
+    re: /(router\.(push|replace|navigate)|Linking\.openURL|WebBrowser\.openBrowserAsync)\s*\(\s*(params|searchParams|query|local)\??\.(next|redirect\w*|returnTo|returnUrl|url|to|callback\w*)\b/ },
+  { id: "analytics-pii", category: "client-security", area: "data-exposure", severity: "P2", scope: notTest,
+    re: /\b(track|logEvent|capture|identify|setUserProperties|setUserProperty|screen|setAttributes)\s*\([^)]*\b(email|phone|phoneNumber|password|address|cnp|ssn|iban|dateOfBirth|dob)\b/i },
+
+  // ---------- security: access control ----------
+  { id: "mass-assignment", category: "backend", area: "access-control", severity: "P1", scope: serverCode,
+    re: /\.(insert|update|upsert)\s*\(\s*(body|req\.body|requestBody|await\s+(req|request)\.json\(\)|\{\s*\.\.\.(body|req\.body|requestBody)\b)|\.(create|update|upsert)\s*\(\s*\{\s*(where[^}]*\}\s*,\s*)?data\s*:\s*(body|req\.body|await\s+(req|request)\.json\(\)|\{\s*\.\.\.(body|req\.body)\b)/,
+    not: /createHmac|createHash|crypto\.|hash\./ },
+
+  // ---------- security: platform ----------
+  { id: "clipboard-sensitive", category: "client-security", area: "platform", severity: "P2", scope: clientCode,
+    re: /(Clipboard\.(setString|setStringAsync)|setStringAsync)\s*\([^)]*\b(token|password|secret|otp|key|seed|mnemonic|iban|recovery\w*)\b/i },
 
   // ---------- auth & sessions ----------
   { id: "supabase-create-client", category: "auth-sessions", re: /createClient\s*(<[^>]*>)?\s*\(/, scope: (c) => /supabase/i.test(c.text) },
@@ -76,10 +136,10 @@ export const RULES = [
   { id: "auth-session-lib", category: "auth-sessions", re: /expo-auth-session|AuthSession\.|makeRedirectUri|WebBrowser\.openAuthSessionAsync/ },
   { id: "biometric", category: "auth-sessions", re: /expo-local-authentication|authenticateAsync\s*\(/ },
   { id: "account-deletion", category: "release", re: /delete[_\s-]?account|deleteAccount|account[_\s-]?deletion|deleteUser/i },
-  { id: "token-in-url", category: "auth-sessions", severity: "P1", guard: true, scope: notTest,
-    re: /[?&](access_token|refresh_token|token|session|jwt)=\$\{/i,
+  { id: "token-in-url", category: "auth-sessions", area: "url-exposure", severity: "P1", guard: true, scope: notTest,
+    re: /[?&](access_token|refresh_token|token|session|jwt)=(\$\{|['"`]\s*\+)/i,
     message: "Token placed in a URL query string. URLs leak into logs, analytics, referrers and image caches; send tokens in the Authorization header instead." },
-  { id: "jwt-decode-only", category: "auth-sessions", severity: "P1", re: /jwt-decode|jwtDecode\s*\(|decodeJwt\s*\(/ },
+  { id: "jwt-decode-only", category: "auth-sessions", area: "auth", severity: "P1", re: /jwt-decode|jwtDecode\s*\(|decodeJwt\s*\(/ },
 
   // ---------- MMKV / storage ----------
   { id: "asyncstorage-import", category: "mmkv", re: /from\s+['"]@react-native-async-storage\/async-storage['"]/ },
@@ -248,6 +308,63 @@ export const FILE_RULES = [
     test: (c) => {
       const n = c.text.split("\n").length;
       return n > 600 ? { line: 1, text: `${n} lines — check render cost, not just length` } : false;
+    },
+  },
+
+  // ---------- security (file-level) ----------
+  {
+    // Route reads a record by an id that comes from the request, and nothing in the file scopes it to the caller.
+    id: "id-access-without-owner-filter", category: "backend", area: "access-control", severity: "P1",
+    scope: (c) => serverCode(c) && /(route|\+api|index|handler|controller|api\/)/i.test(c.file),
+    test: (c) => {
+      const m = c.text.match(/\.eq\(\s*['"]id['"]\s*,|findUnique\(\s*\{\s*where\s*:\s*\{\s*id\b|\.where\(\s*['"]?id['"]?\s*,|\.doc\(\s*(params|body|id)\b/);
+      if (!m) return false;
+      if (!/\b(params|body|searchParams|req|request|query|input)\b/.test(c.text)) return false;
+      if (/\.eq\(\s*['"]\w+_id['"]|\.match\(\s*\{|(user_id|userId|owner_id|ownerId|created_by|createdBy|author_id|authorId|org_id|orgId|tenant_id|tenantId|team_id|teamId|workspace_id|member|auth\.uid|policy)\b|\b(assert|require|ensure|verify|check|can|authorize|has)\w*(Owner|Access|Member|Permission|Role|Admin|Tenant|Org)\w*\s*\(/.test(c.text)) return false;
+      const line = c.text.slice(0, m.index).split("\n").length;
+      const svc = /service_role|SERVICE_ROLE|serviceRole|supabaseAdmin|adminClient/i.test(c.text) ? " (service-role client: RLS does not apply)" : "";
+      return { line, text: `Record looked up by id from the request with no owner/tenant check in this file${svc}` };
+    },
+  },
+  {
+    id: "password-input-not-secure", category: "client-security", area: "platform", severity: "P2",
+    scope: (c) => TSX(c) && notTest(c) && !c.server && /from\s+['"](react-native|heroui-native[\w/-]*|react-native-paper|tamagui|@rneui\/[\w-]+)['"]/.test(c.text),
+    test: (c) => {
+      const re = /<(TextInput|TextField|Input|TextArea)\b(?:(?!<[A-Z])[\s\S]){0,800}?(placeholder|label|name|textContentType|autoComplete|accessibilityLabel)=\{?\s*['"`][^'"`]*(password|parol|passcode|\bpin\b)[^'"`]*['"`]/gi;
+      for (const m of c.text.matchAll(re)) {
+        const end = c.text.indexOf("/>", m.index);
+        const tag = c.text.slice(m.index, end > 0 && end - m.index < 1500 ? end : m.index + 800);
+        if (!/secureTextEntry|type=['"]password['"]/.test(tag)) {
+          return { line: c.text.slice(0, m.index).split("\n").length, text: "Password-like input without secureTextEntry" };
+        }
+      }
+      return false;
+    },
+  },
+  {
+    id: "webview-onmessage-no-origin", category: "client-security", area: "platform", severity: "P2", scope: notTest,
+    test: (c) => {
+      const m = c.text.match(/onMessage=\{/);
+      if (!m || /nativeEvent\.(url|origin)|event\.origin|\.origin\s*(===|!==)|allowedOrigins|ALLOWED_ORIGINS/.test(c.text)) return false;
+      return { line: c.text.slice(0, m.index).split("\n").length, text: "WebView onMessage handler with no origin/url check" };
+    },
+  },
+  {
+    id: "upload-no-validation", category: "backend", area: "api-hardening", severity: "P2", scope: serverCode,
+    test: (c) => {
+      const m = c.text.match(/\.get\(\s*['"](file|image|avatar|photo|upload|attachment|document|media)s?['"]\s*\)|\.upload\(\s*[^,]+,|instanceof\s+(File|Blob)\b/);
+      if (!m) return false;
+      if (/\.size\b|\.type\b|mime|content-?type|fileTypeFrom|magic|maxFileSize|MAX_(FILE|UPLOAD)|allowedTypes|ALLOWED_TYPES/i.test(c.text)) return false;
+      return { line: c.text.slice(0, m.index).split("\n").length, text: "Upload accepted without size or type validation in this file" };
+    },
+  },
+  {
+    id: "webhook-no-signature", category: "backend", area: "api-hardening", severity: "P1", scope: serverCode,
+    test: (c) => {
+      if (!/webhook/i.test(c.file) && !/(stripe|revenuecat|svix|clerk|paddle|lemonsqueezy|github)[\s\S]{0,200}(event|webhook)/i.test(c.text)) return false;
+      if (!/export\s+(async\s+)?(function|const)\s+POST\b|Deno\.serve|serve\(|req\.method\s*===?\s*['"]POST/.test(c.text)) return false;
+      if (/constructEvent|constructEventAsync|verifySignature|verifyWebhook|Webhook\s*\(|\.verify\s*\(|timingSafeEqual|createHmac|crypto\.subtle\.(verify|importKey)|x-signature|stripe-signature|svix-signature|authorization/i.test(c.text)) return false;
+      return { line: 1, text: "Webhook handler with no signature/secret verification in this file" };
     },
   },
 ];

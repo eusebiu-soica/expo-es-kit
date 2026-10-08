@@ -6,18 +6,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 import { RULES, FILE_RULES, redact } from "./rules.mjs";
+import { SOURCE_EXT, SKIP_DIRS, readJson, readText, rel, walk, git, verOf } from "./lib.mjs";
 
-const VERSION = "0.1.0";
+const VERSION = "0.3.0";
 const MAX_SAMPLES = 12;
 const MAX_FILE_BYTES = 600_000;
-const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
-const SKIP_DIRS = new Set([
-  "node_modules", ".git", ".expo", ".expo-shared", "dist", "build", "web-build", "coverage",
-  "ios", "android", ".next", ".vercel", ".turbo", ".cache", "Pods", "vendor", "__generated__",
-  "test-output", ".claude", ".cursor", ".agents", "docs",
-]);
 
 // ---------- args ----------
 const args = process.argv.slice(2);
@@ -36,38 +30,6 @@ if (!fs.existsSync(path.join(appRoot, "package.json"))) {
 function fail(msg) {
   process.stdout.write(JSON.stringify({ error: msg }) + "\n");
   process.exit(1);
-}
-function readJson(p) {
-  try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return null; }
-}
-function readText(p) {
-  try { return fs.readFileSync(p, "utf8"); } catch { return null; }
-}
-function rel(root, p) { return path.relative(root, p).split(path.sep).join("/"); }
-function walk(root, out = []) {
-  let entries;
-  try { entries = fs.readdirSync(root, { withFileTypes: true }); } catch { return out; }
-  for (const e of entries) {
-    if (e.name.startsWith(".") && e.name !== ".env" && !e.name.startsWith(".env") && e.isDirectory()) {
-      if (![".github", ".eas"].includes(e.name)) continue;
-    }
-    const full = path.join(root, e.name);
-    if (e.isDirectory()) {
-      if (SKIP_DIRS.has(e.name)) continue;
-      walk(full, out);
-    } else if (e.isFile()) {
-      out.push(full);
-    }
-  }
-  return out;
-}
-function git(root, gitArgs) {
-  try {
-    return execFileSync("git", ["-C", root, ...gitArgs], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
-  } catch { return null; }
-}
-function verOf(pkg, name) {
-  return pkg?.dependencies?.[name] ?? pkg?.devDependencies?.[name] ?? null;
 }
 function addHit(store, id, root, file, line, text) {
   const h = (store[id] ??= { count: 0, files: new Set(), samples: [] });

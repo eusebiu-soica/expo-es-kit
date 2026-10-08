@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Build a self-contained audit history page + score badge from docs/audits/*.json.
 // Usage: node history.mjs <appRoot> [--dir=docs/audits] [--out=<dir>/history.html]
-// Writes: <out>, <dir>/badge.svg, <dir>/badge.json (shields.io endpoint format). No network, no deps.
+// Writes: <out>, <dir>/badge.svg, <dir>/badge.json (shields.io endpoint format), and badge-security.{svg,json}
+// when security-audit reports exist. No network, no deps.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -37,56 +38,70 @@ reports.sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
 
 const audits = reports.filter((r) => r.type === "audit");
 const fixes = reports.filter((r) => r.type === "fix");
-if (!audits.length) {
-  console.log(JSON.stringify({ error: `No expo-es-kit audit JSON in ${dir}.` }));
+const secAudits = reports.filter((r) => r.type === "security-audit");
+if (!audits.length && !secAudits.length) {
+  console.log(JSON.stringify({ error: `No expo-es-kit audit or security-audit JSON in ${dir}.` }));
   process.exit(1);
 }
+// The main series is the production-readiness audit; with only security audits, those become the main series.
+const base = audits.length ? audits : secAudits;
 
 function counts(r) {
   const c = { P0: 0, P1: 0, P2: 0 };
-  for (const cat of r.categories ?? []) for (const f of cat.findings ?? []) {
+  const groups = r.type === "security-audit" && Array.isArray(r.areas) ? r.areas : r.categories ?? [];
+  for (const cat of groups) for (const f of cat.findings ?? []) {
     if (f.status && f.status !== "open" && f.status !== "partial") continue;
     if (c[f.severity] !== undefined) c[f.severity]++;
   }
   return c;
 }
-const rows = audits.map((r) => ({
+const scoreOf = (r) => (r.type === "security-audit" ? r.securityScore ?? r.overall : r.overall);
+const toRow = (r) => ({
   file: r.file,
+  type: r.type === "security-audit" ? "security" : "audit",
   date: r.date,
   mode: r.mode,
-  overall: typeof r.overall === "number" ? r.overall : null,
+  overall: typeof scoreOf(r) === "number" ? scoreOf(r) : null,
   verdict: r.verdict ?? "",
   scores: Object.fromEntries((r.categories ?? []).map((c) => [c.id, typeof c.score === "number" ? c.score : null])),
   keyFindings: Object.fromEntries((r.categories ?? []).map((c) => [c.id, c.keyFinding ?? ""])),
   counts: counts(r),
-}));
+});
+const rows = base.map(toRow);
+const secRows = audits.length ? secAudits.map(toRow) : [];
 const fixRows = fixes.map((r) => ({ file: r.file, date: r.date, overall: r.overall ?? null }));
 const latest = rows[rows.length - 1];
 const prev = rows.length > 1 ? rows[rows.length - 2] : null;
-const appName = audits[audits.length - 1].stack?.name ?? path.basename(appRoot);
+const appName = base[base.length - 1].stack?.name ?? path.basename(appRoot);
 
 // ---------- badge ----------
 const statusOf = (s) => (s == null ? "na" : s >= 8 ? "good" : s >= 5 ? "warning" : "critical");
 const BADGE_COLORS = { good: "#0ca30c", warning: "#c98500", critical: "#d03b3b", na: "#6b6a65" };
-const message = latest.overall == null ? "n/a" : `${latest.overall.toFixed(1)}/10`;
-const label = "expo audit";
 const w = (t) => Math.round(t.length * 6.6 + 12);
+function writeBadge(name, label, row) {
+const message = row.overall == null ? "n/a" : `${row.overall.toFixed(1)}/10`;
 const lw = w(label), mw = w(message);
 const badgeSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${lw + mw}" height="20" role="img" aria-label="${label}: ${message}">
-<title>${label}: ${message}${latest.verdict ? ` (${latest.verdict})` : ""}</title>
+<title>${label}: ${message}${row.verdict ? ` (${row.verdict})` : ""}</title>
 <linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
 <clipPath id="r"><rect width="${lw + mw}" height="20" rx="3" fill="#fff"/></clipPath>
-<g clip-path="url(#r)"><rect width="${lw}" height="20" fill="#555"/><rect x="${lw}" width="${mw}" height="20" fill="${BADGE_COLORS[statusOf(latest.overall)]}"/><rect width="${lw + mw}" height="20" fill="url(#s)"/></g>
+<g clip-path="url(#r)"><rect width="${lw}" height="20" fill="#555"/><rect x="${lw}" width="${mw}" height="20" fill="${BADGE_COLORS[statusOf(row.overall)]}"/><rect width="${lw + mw}" height="20" fill="url(#s)"/></g>
 <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11">
 <text x="${lw / 2}" y="14">${label}</text><text x="${lw + mw / 2}" y="14">${message}</text></g></svg>
 `;
-fs.writeFileSync(path.join(dir, "badge.svg"), badgeSvg);
-fs.writeFileSync(path.join(dir, "badge.json"), JSON.stringify({
-  schemaVersion: 1, label, message, color: { good: "brightgreen", warning: "yellow", critical: "red", na: "lightgrey" }[statusOf(latest.overall)],
+fs.writeFileSync(path.join(dir, `${name}.svg`), badgeSvg);
+fs.writeFileSync(path.join(dir, `${name}.json`), JSON.stringify({
+  schemaVersion: 1, label, message, color: { good: "brightgreen", warning: "yellow", critical: "red", na: "lightgrey" }[statusOf(row.overall)],
 }, null, 2) + "\n");
+return message;
+}
+const message = writeBadge("badge", audits.length ? "expo audit" : "security", latest);
+const latestSec = secAudits.length ? toRow(secAudits[secAudits.length - 1]) : null;
+if (latestSec) writeBadge("badge-security", "security", latestSec);
 
 // ---------- page ----------
-const data = { appName, generatedAt: new Date().toISOString(), categories: CATEGORIES, rows, fixRows };
+const data = { appName, generatedAt: new Date().toISOString(), categories: CATEGORIES, rows, secRows, fixRows };
+const tableRows = [...rows, ...secRows].sort((a, b) => `${a.date}|${a.file}`.localeCompare(`${b.date}|${b.file}`));
 const json = JSON.stringify(data).replace(/</g, "\\u003c");
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const delta = prev && latest.overall != null && prev.overall != null ? latest.overall - prev.overall : null;
@@ -169,7 +184,7 @@ button.theme { background: none; border: 1px solid var(--border); color: var(--t
 <body>
 <main>
 <header>
-  <div><h1>Audit history · ${esc(appName)}</h1><div class="muted">${rows.length} audit${rows.length === 1 ? "" : "s"}${fixRows.length ? ` · ${fixRows.length} fix run${fixRows.length === 1 ? "" : "s"}` : ""} · generated by expo-es-kit</div></div>
+  <div><h1>Audit history · ${esc(appName)}</h1><div class="muted">${rows.length} ${audits.length ? "audit" : "security audit"}${rows.length === 1 ? "" : "s"}${secRows.length ? ` · ${secRows.length} security audit${secRows.length === 1 ? "" : "s"}` : ""}${fixRows.length ? ` · ${fixRows.length} fix run${fixRows.length === 1 ? "" : "s"}` : ""} · generated by expo-es-kit</div></div>
   <button class="theme" id="theme" type="button">Toggle theme</button>
 </header>
 
@@ -186,6 +201,12 @@ button.theme { background: none; border: 1px solid var(--border); color: var(--t
   <div class="chart-wrap" id="overall"></div>
   ${rows.length < 2 ? '<p class="note">Run another audit to see the trend.</p>' : ""}
 </section>
+${secRows.length ? `
+<section class="card">
+  <h2>Security score over time</h2>
+  <p class="note" style="margin-top:-6px">From <code>/expo-es-kit:security</code> reports. Latest: ${latestSec.overall == null ? "—" : latestSec.overall.toFixed(1)} / 10 · ${esc(latestSec.verdict)} · <img src="badge-security.svg" alt="security ${latestSec.overall == null ? "n/a" : latestSec.overall.toFixed(1)}" style="vertical-align:middle"></p>
+  <div class="chart-wrap" id="security"></div>
+</section>` : ""}
 
 <section class="card">
   <h2>Categories</h2>
@@ -202,8 +223,8 @@ button.theme { background: none; border: 1px solid var(--border); color: var(--t
 <section class="card">
   <h2>All audits</h2>
   <div class="table-scroll"><table>
-    <thead><tr><th>Date</th><th>Mode</th><th class="num">Overall</th><th>Verdict</th><th class="num">P0</th><th class="num">P1</th><th class="num">P2</th><th>Report</th></tr></thead>
-    <tbody>${rows.slice().reverse().map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.mode)}</td><td class="num">${r.overall == null ? "—" : r.overall.toFixed(1)}</td><td>${esc(r.verdict)}</td><td class="num">${r.counts.P0}</td><td class="num">${r.counts.P1}</td><td class="num">${r.counts.P2}</td><td><a href="${esc(r.file.replace(/\.json$/, ".md"))}">${esc(r.file.replace(/\.json$/, ".md"))}</a></td></tr>`).join("")}</tbody>
+    <thead><tr><th>Date</th><th>Type</th><th>Mode</th><th class="num">Overall</th><th>Verdict</th><th class="num">P0</th><th class="num">P1</th><th class="num">P2</th><th>Report</th></tr></thead>
+    <tbody>${tableRows.slice().reverse().map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td>${esc(r.mode)}</td><td class="num">${r.overall == null ? "—" : r.overall.toFixed(1)}</td><td>${esc(r.verdict)}</td><td class="num">${r.counts.P0}</td><td class="num">${r.counts.P1}</td><td class="num">${r.counts.P2}</td><td><a href="${esc(r.file.replace(/\.json$/, ".md"))}">${esc(r.file.replace(/\.json$/, ".md"))}</a></td></tr>`).join("")}</tbody>
   </table></div>
 </section>
 </main>
@@ -279,13 +300,20 @@ button.theme { background: none; border: 1px solid var(--border); color: var(--t
   }
 
   function renderAll() {
-  for (const id of ["overall", "multiples", "findings"]) document.getElementById(id).innerHTML = "";
+  for (const id of ["overall", "security", "multiples", "findings"]) { const n = document.getElementById(id); if (n) n.innerHTML = ""; }
   const ow = Math.max(300, document.getElementById("overall").clientWidth);
   // Overall
   lineChart(document.getElementById("overall"), rows.map((r) => ({ date: r.date, v: r.overall, r })), {
     width: ow, height: ow < 600 ? 200 : 260, margin: { t: 12, r: 16, b: 26, l: 32 }, ticks: [0, 2, 4, 6, 8, 10], showAxis: true, area: true, dot: 4,
     label: "Overall audit score over time, 0 to 10",
     tip: (p) => \`<div class="muted">\${p.date} · \${p.r.mode || ""}</div><div>Overall <b>\${fmt(p.v)}</b> / 10</div><div>\${p.r.verdict || ""}</div><div class="muted">P0 \${p.r.counts.P0} · P1 \${p.r.counts.P1} · P2 \${p.r.counts.P2}</div>\`,
+  });
+
+  const secWrap = document.getElementById("security");
+  if (secWrap) lineChart(secWrap, D.secRows.map((r) => ({ date: r.date, v: r.overall, r })), {
+    width: ow, height: ow < 600 ? 160 : 200, margin: { t: 12, r: 16, b: 26, l: 32 }, ticks: [0, 2, 4, 6, 8, 10], showAxis: true, area: true, dot: 4,
+    label: "Security score over time, 0 to 10",
+    tip: (p) => \`<div class="muted">\${p.date} · \${p.r.mode || ""}</div><div>Security <b>\${fmt(p.v)}</b> / 10</div><div>\${p.r.verdict || ""}</div><div class="muted">P0 \${p.r.counts.P0} · P1 \${p.r.counts.P1} · P2 \${p.r.counts.P2}</div>\`,
   });
 
   // Small multiples per category
@@ -355,6 +383,7 @@ fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, html);
 console.log(JSON.stringify({
   ok: true, html: path.relative(appRoot, out), badgeSvg: path.relative(appRoot, path.join(dir, "badge.svg")),
-  badgeJson: path.relative(appRoot, path.join(dir, "badge.json")), audits: rows.length, fixes: fixRows.length,
+  badgeJson: path.relative(appRoot, path.join(dir, "badge.json")), audits: rows.length, securityAudits: secAudits.length, fixes: fixRows.length,
+  securityBadge: latestSec ? path.relative(appRoot, path.join(dir, "badge-security.svg")) : null,
   latest: { date: latest.date, overall: latest.overall, verdict: latest.verdict },
 }, null, 2));

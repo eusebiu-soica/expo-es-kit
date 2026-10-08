@@ -1,6 +1,6 @@
 ---
 name: upgrade
-description: "Upgrade an Expo app's SDK safely, one major version at a time (e.g. 54 → 55 → 56 → 57), with a plan from the official release notes, breaking-change edits, patch-package and library compatibility checks, OTA/runtimeVersion safety, and verification gates after every step (typecheck, lint, tests, expo-doctor, dev-client rebuild + device smoke test) before moving on; ends with a re-audit of dependencies and updates. Uses the official Expo upgrade skill when installed. Use when the user wants to upgrade Expo / React Native / the SDK, or after an audit flags an old SDK."
+description: "Upgrade an Expo app's SDK safely, one major at a time, with a plan from the release notes, breaking-change edits, patch and library compatibility checks, OTA/runtimeVersion safety and gates after each step (typecheck, lint, tests, expo-doctor, dev-client rebuild, device smoke test), then a re-audit. Uses the official Expo upgrade skill when installed. Use to upgrade Expo / React Native / the SDK."
 argument-hint: "[appPath] [--to=<sdk>] [--plan-only]"
 ---
 
@@ -10,7 +10,7 @@ An SDK upgrade is a series of small, verified steps. **Go one major at a time an
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - References in `PLUGIN_ROOT/skills/upgrade/references/`:
   - `playbook.md`: the per-step checklist, rollback, and a table of common breakages
   - `sdk-notes.md`: notes for each SDK

@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Generate or update per-folder CLAUDE.md files in an Expo / React Native app (root, app/ routes, components, hooks, lib, storage, state, db/data layer, assets, native modules, tests) — and optionally in its separate API repo — with grouped \"Use / Never / Patterns / Before finishing\" rules so coding agents always know what to use and what to avoid. Data-layer docs are written for the app's backend mode: direct DB (Supabase + RLS) or API (Next.js on Vercel, Supabase Edge Functions, Expo API routes). Detects stale existing CLAUDE.md claims. Use when the user asks to set up Claude/agent instructions, create CLAUDE.md files, \"teach agents my app\", or after an audit flags agent-config."
+description: "Generate or update per-folder CLAUDE.md agent rules in an Expo / React Native app (routes, components, hooks, lib, storage, state, data layer, assets, native modules, tests) and its API repo, with \"Use / Never / Patterns / Before finishing\" sections adapted to the backend mode (Supabase RLS or API). Flags stale claims. Use to set up agent instructions, create CLAUDE.md files, \"teach agents my app\", or after an audit flags agent-config."
 argument-hint: "[appPath] [--mode=direct-db|api|hybrid] [--api=<apiRepoPath>] [--dry-run]"
 ---
 
@@ -10,7 +10,7 @@ You write short, specific, per-folder agent instructions. The best CLAUDE.md fil
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - Templates live in `PLUGIN_ROOT/skills/setup/templates/`. Read its `README.md` first for the placeholder and conditional syntax.
 - `--dry-run` means: print the plan, the full contents of new files and the diffs for existing files, then write nothing.
 

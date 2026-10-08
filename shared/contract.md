@@ -70,6 +70,8 @@ Scores use 0.5 steps. A category with any confirmed **P0** cannot score above **
 ```
 
 ID prefixes: `PERF`, `START`, `BUN`, `CACHE`, `MMKV`, `SEC`(secure-storage), `CSEC`(client-security), `AUTH`, `BE`, `DEP`, `UPD`, `REL`, `AGT`, `HUI`.
+Security-audit prefixes (same categories, finer area): `SECR`(secrets), `INJ`(injection), `URL`(url-exposure), `ACL`(access-control), `PLAT`(platform), `HARD`(api-hardening), `DATA`(data-exposure), `SUP`(supply-chain); auth findings keep `AUTH`.
+Optional field `area` (security findings): `secrets` | `injection` | `url-exposure` | `access-control` | `auth` | `platform` | `api-hardening` | `data-exposure` | `supply-chain`.
 `verified`: `confirmed` | `downgraded` | `unverified` (P2 findings are not verified) | `rejected` (dropped from the report, kept only in JSON under `rejected`).
 `status`: `open` | `fixed` | `partial` | `wontfix`.
 
@@ -100,7 +102,7 @@ Each auditor agent returns exactly one fenced JSON block:
 ```json
 {
   "tool": "expo-es-kit",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "type": "audit",
   "date": "2026-10-07",
   "appRoot": ".",
@@ -117,9 +119,42 @@ Each auditor agent returns exactly one fenced JSON block:
 ```
 
 A fix run writes the same shape with `"type": "fix"` plus `"before": { "<categoryId>": score }`.
-Other report types written by the kit: `"backend-audit"`, `"heroui-audit"`, `"upgrade"`. `scripts/history.mjs` charts only `"audit"` reports (and counts `"fix"` runs).
+Other report types written by the kit: `"backend-audit"`, `"heroui-audit"`, `"security-audit"`, `"upgrade"`. `scripts/history.mjs` charts `"audit"` reports, charts the security score of `"security-audit"` reports as its own series, and counts `"fix"` runs.
+
+## Security audit (`"type": "security-audit"`)
+
+Written by the `security` skill. Same top-level fields as an audit report, plus:
+
+| Area id | Name | Weight | Finding category |
+|---|---|---|---|
+| `secrets` | Secrets | 1.5 | `client-security` (or `backend`) |
+| `access-control` | Access control (IDOR/BOLA, RLS, tenants) | 1.5 | `backend` |
+| `injection` | Injection (SQL/PostgREST, XSS, command, SSRF…) | 1.5 | `backend` / `client-security` |
+| `auth` | Auth & sessions | 1.5 | `auth-sessions` |
+| `url-exposure` | Sensitive data in URLs, deep links, redirects | 1.0 | `client-security` / `backend` |
+| `data-exposure` | PII in logs, analytics, crash reports, push, clipboard | 1.0 | `client-security` |
+| `platform` | Mobile platform (inputs, WebView, network, backups, exported components) | 1.0 | `client-security` / `secure-storage` |
+| `api-hardening` | Rate limits, uploads, webhooks, CORS, headers, CSRF, error leaks | 1.0 | `backend` |
+| `supply-chain` | Lockfile, audit gate, install scripts, non-registry deps | 0.5 | `deps` |
+
+```json
+{
+  "type": "security-audit",
+  "securityScore": 6.4,
+  "verdict": "NO-GO",
+  "areas": [ { "id": "injection", "score": 5, "status": "🟡", "keyFinding": "…", "topFix": "…", "strengths": [], "findings": [ /* Finding JSON with "area" */ ] } ],
+  "categories": [ /* the four security categories, scored from the area findings, so fix and history can use them */ ],
+  "owasp": [ { "id": "M1", "name": "Improper Credential Usage", "status": "✅ | ❌ | ⚪", "checks": ["SECR-01"], "findings": ["SECR-003"] } ],
+  "accessMatrix": [ { "resource": "public.orders", "role": "user", "op": "select", "allowedBy": "policy orders_owner_read", "scopedBy": "user_id = (select auth.uid())", "verdict": "ok | finding id" } ],
+  "inputSinks": [ { "input": "Search", "file": "app/search.tsx:41", "sink": "lib/search.ts:12 .or()", "parameterized": false, "validated": "no", "verdict": "INJ-001" } ],
+  "probes": [ { "id": "P-01", "target": "preview", "result": "pass | fail | not run" } ],
+  "notChecked": ["git history (run with --history)"]
+}
+```
+
+`securityScore` = Σ(area score × weight) / Σ(weight) over non-`n/a` areas. Caps and verdict follow the rules above (a confirmed P0 anywhere ⇒ NO-GO).
 
 ## Report location
 
 Default directory: `docs/audits/` in the app root (override with `--out=<file.md>`; the JSON goes next to it with the same basename).
-File names: `expo-audit-YYYY-MM-DD.md/.json`, `expo-fix-YYYY-MM-DD.md/.json`. If a file for today exists, append `-2`, `-3`, ….
+File names: `expo-audit-YYYY-MM-DD.md/.json`, `expo-fix-YYYY-MM-DD.md/.json`, `security-audit-YYYY-MM-DD.md/.json`. If a file for today exists, append `-2`, `-3`, ….

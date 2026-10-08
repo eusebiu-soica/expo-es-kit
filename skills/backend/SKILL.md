@@ -1,6 +1,6 @@
 ---
 name: backend
-description: "Design, audit or implement the backend side of an Expo / React Native app securely, in either mode — direct database access from the app (Supabase + RLS, RPCs, storage policies) or an API hosted elsewhere (Next.js route handlers on Vercel, Supabase Edge Functions, Expo API Routes on EAS Hosting) — including auth and session correctness end to end (token storage, refresh, PKCE, server-side JWT verification, IDOR/BOLA, rate limits, sign-out). Use when the user asks about app↔backend architecture, API security, RLS, \"is my API secure\", auth/sessions, or wants to build an API endpoint for the app."
+description: "Design, audit or implement the backend of an Expo / React Native app securely: direct DB access (Supabase RLS, RPCs, storage policies) or an API elsewhere (Next.js on Vercel, Supabase Edge Functions, Expo API Routes), with auth and sessions end to end (token storage, refresh, PKCE, JWT verification, IDOR, rate limits). Use for app↔backend architecture, API security, RLS, \"is my API secure\", or building an API endpoint."
 argument-hint: "[design|audit|implement] [appPath] [--api=<apiRepoPath>] [--framework=nextjs|supabase-edge|expo-api-routes]"
 ---
 
@@ -10,7 +10,7 @@ Three sub-commands. If none is given, infer one from the request: a question abo
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - References live in `PLUGIN_ROOT/skills/backend/references/`:
 
 | File | Use |
@@ -43,6 +43,8 @@ Three sub-commands. If none is given, infer one from the request: a question abo
 4. Offer to write it to `docs/architecture/backend.md` in the app. Also offer to run `/expo-es-kit:setup --mode=<mode>` so the agent rules match the decision.
 
 ## audit
+
+> Scope: backend, auth and API configuration. For the full application security audit — injection traced from every input, sensitive data in URLs, access matrix, OWASP coverage, git-history secrets — use `/expo-es-kit:security`.
 
 This is a focused, deeper version of the audit's `backend` and `auth-sessions` categories.
 

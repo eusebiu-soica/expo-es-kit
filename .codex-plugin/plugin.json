@@ -1,0 +1,47 @@
+{
+  "name": "expo-es-kit",
+  "version": "0.3.0",
+  "description": "Build, audit and secure production-ready Expo / React Native apps: scored multi-agent audits, an in-depth security audit (secrets, injection, URL exposure, IDOR/RLS, OWASP), verified fixes, per-folder agent rules, backend/API security (Supabase or Next.js/Edge/Expo API routes), foundation scaffolding, store privacy forms, verified SDK upgrades, audit history and HeroUI Native audits.",
+  "author": {
+    "name": "eusebiu-soica",
+    "url": "https://github.com/eusebiu-soica"
+  },
+  "homepage": "https://expo-es-kit.eusebiusoica.com",
+  "repository": "https://github.com/eusebiu-soica/expo-es-kit",
+  "license": "MIT",
+  "keywords": [
+    "expo",
+    "react-native",
+    "audit",
+    "security",
+    "owasp",
+    "sql-injection",
+    "idor",
+    "performance",
+    "mmkv",
+    "secure-store",
+    "supabase",
+    "heroui-native",
+    "privacy-manifest",
+    "data-safety",
+    "expo-upgrade",
+    "claude-code",
+    "codex",
+    "cursor"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "expo-es-kit",
+    "shortDescription": "Audit, secure and fix production Expo / React Native apps",
+    "longDescription": "Build, audit and secure production-ready Expo / React Native apps: scored multi-agent audits, an in-depth security audit (secrets, injection, URL exposure, IDOR/RLS, OWASP), verified fixes, per-folder agent rules, backend/API security (Supabase or Next.js/Edge/Expo API routes), foundation scaffolding, store privacy forms, verified SDK upgrades, audit history and HeroUI Native audits.",
+    "developerName": "eusebiu-soica",
+    "category": "Coding",
+    "websiteURL": "https://expo-es-kit.eusebiusoica.com",
+    "defaultPrompt": [
+      "Audit my Expo app before release",
+      "Run a security audit of my app and its API",
+      "Fix the P0 findings from the last audit"
+    ],
+    "brandColor": "#FF7A45"
+  }
+}

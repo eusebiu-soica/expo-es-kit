@@ -1,6 +1,6 @@
 ---
 name: heroui
-description: "Audit and set up HeroUI Native (heroui-native) in an Expo app — performance (granular imports, single sheet host, skeleton cost, overdraw from translucent colors, memoized rows), design tokens (colors, typography, spacing, radius adoption vs hardcoded values, dark/light parity, tailwind-variants), animations (Reanimated v4, reduced motion, transitions, bottom-sheet snap/scroll) and accessibility. Outputs a 0–10 scored table with suggestions. Use when the user mentions HeroUI / heroui-native, UI library audit, design tokens, or UI performance in an app that uses HeroUI Native."
+description: "Audit and set up HeroUI Native (heroui-native) in an Expo app: performance (granular imports, single sheet host, skeleton cost, overdraw), design tokens (colors, typography, spacing, radius, dark/light parity), animations (Reanimated v4, reduced motion, sheets) and accessibility. 0–10 scores with suggestions. Use when the user mentions HeroUI / heroui-native, design tokens, or UI performance in a HeroUI Native app."
 argument-hint: "[audit|setup] [appPath] [--out=<report.md>]"
 ---
 
@@ -10,7 +10,7 @@ Only applies when `heroui-native` is in `package.json`. If it isn't installed, s
 
 ## 0. Setup
 
-- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
+- `PLUGIN_ROOT` is two levels above this SKILL.md. If unknown, run `find ~/.claude/plugins ~/.codex ~/.cursor/plugins ~/.agents -type f -path '*expo-es-kit*/scripts/scan.mjs' | head -1` and strip `/scripts/scan.mjs`.
 - Read `PLUGIN_ROOT/shared/contract.md` (category `heroui`, IDs `HUI-xx`) and `references/checklist.md`.
 - Run `node "$PLUGIN_ROOT/scripts/scan.mjs" <app> --summary > "$TMP/scan.json"`.
 - HeroUI Native is young (v1.x). Where an API detail matters, check the installed version in `node_modules/heroui-native/package.json` and the official docs (https://heroui.com/docs/native). Don't rely on memory.
